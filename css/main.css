@@ -19,12 +19,12 @@ body {
 }
 
 body > header {
-  height: 150px;
+  height: 120px;
   background-image: linear-gradient(#eeeee0 0%, #fffff0 25%);
 }
 
 body > header > nav {
-  padding: 100px 10% 0 25%;
+  padding: 70px 10% 0 25%;
   height: 100%;
 }
 body > header > nav > ul {
