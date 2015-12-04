@@ -77,11 +77,23 @@ body > main {
   padding: 1em 2em;
 }
 
-body > main dl.studio-equipment {
-  display: block;
-
+body > main div.studio-equipment {
+  width: 500px;
+  margin: 0 auto;
+  padding: 1em;
+  border-radius: 5px;
+  border: 1px solid #bbbbb0;
+  background-color: #eeeee0;
 }
 
-body > main dl.studio-equipment dt {
-  display: inline-block;
+body > main div.studio-equipment dl {
+  display: table-cell;
+  width: calc(100% / 6);
+}
+
+body > main div.studio-equipment dl dt {
+  display: block;
+  font-size: 3em;
+  width: 100%;
+  padding: 0.33em 0.67em;
 }
