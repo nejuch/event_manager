@@ -1,0 +1,109 @@
+@font-face {
+	font-family: "Flaticon";
+	src: url("../fonts/flaticon.eot");
+	src: url("../fonts/flaticon.eot#iefix") format("embedded-opentype"),
+	url("../fonts/flaticon.woff") format("woff"),
+	url("../fonts/flaticon.ttf") format("truetype"),
+	url("../fonts/flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+	font-family: Flaticon;
+        font-size: 20px;
+font-style: normal;
+margin-left: 20px;
+}.flaticon-accordion:before {
+	content: "\e000";
+}
+.flaticon-acoustic:before {
+	content: "\e001";
+}
+.flaticon-band:before {
+	content: "\e002";
+}
+.flaticon-clarinet:before {
+	content: "\e003";
+}
+.flaticon-drum24:before {
+	content: "\e004";
+}
+.flaticon-earphones35:before {
+	content: "\e005";
+}
+.flaticon-electricguitar3:before {
+	content: "\e006";
+}
+.flaticon-electricguitar4:before {
+	content: "\e007";
+}
+.flaticon-flute3:before {
+	content: "\e008";
+}
+.flaticon-guitar5:before {
+	content: "\e009";
+}
+.flaticon-guitars:before {
+	content: "\e00a";
+}
+.flaticon-harmonic:before {
+	content: "\e00b";
+}
+.flaticon-instrument27:before {
+	content: "\e00c";
+}
+.flaticon-mic20:before {
+	content: "\e00d";
+}
+.flaticon-mic22:before {
+	content: "\e00e";
+}
+.flaticon-midi:before {
+	content: "\e00f";
+}
+.flaticon-music268:before {
+	content: "\e010";
+}
+.flaticon-musicalinstrument25:before {
+	content: "\e011";
+}
+.flaticon-musicalinstrument29:before {
+	content: "\e012";
+}
+.flaticon-musicalinstrument5:before {
+	content: "\e013";
+}
+.flaticon-musical187:before {
+	content: "\e014";
+}
+.flaticon-musical194:before {
+	content: "\e015";
+}
+.flaticon-musical195:before {
+	content: "\e016";
+}
+.flaticon-musicalinstrument33:before {
+	content: "\e017";
+}
+.flaticon-musicalinstrument36:before {
+	content: "\e018";
+}
+.flaticon-musicalinstrument70:before {
+	content: "\e019";
+}
+.flaticon-piano23:before {
+	content: "\e01a";
+}
+.flaticon-stringinstrument1:before {
+	content: "\e01b";
+}
+.flaticon-synthesizer1:before {
+	content: "\e01c";
+}
+.flaticon-trumpet9:before {
+	content: "\e01d";
+}
+.flaticon-vintage29:before {
+	content: "\e01e";
+}
