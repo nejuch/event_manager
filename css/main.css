@@ -78,12 +78,14 @@ body > main {
 }
 
 body > main div.studio-equipment {
-  width: 500px;
+  display: table;
+  width: 50%;
   margin: 0 auto;
   padding: 1em;
   border-radius: 5px;
   border: 1px solid #bbbbb0;
   background-color: #eeeee0;
+  box-shadow: 0 0 10px inset;
 }
 
 body > main div.studio-equipment dl {
@@ -96,4 +98,17 @@ body > main div.studio-equipment dl dt {
   font-size: 3em;
   width: 100%;
   padding: 0.33em 0.67em;
+  text-align: center;
+  color: #bbbbb0;
+  cursor: pointer;
+}
+body > main div.studio-equipment dl dt.selected {
+  color: #333330;
+}
+body > main div.studio-equipment dl dt:hover {
+  color: #b8d19a;
+  background-color: rgba(0,0,0,0.02);
+}
+body > main div.studio-equipment dl dt.selected:hover {
+  color: #7f4d46;
 }
