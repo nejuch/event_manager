@@ -1,13 +1,11 @@
-@import url(https://fonts.googleapis.com/css?family=Quicksand:400,700,300);
-@import url(https://fonts.googleapis.com/css?family=Lobster);
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
 }
@@ -30,10 +28,12 @@ body > header > nav {
   padding: 70px 10% 0 25%;
   height: 100%;
 }
+
 body > header > nav > ul {
   border-bottom: 1px solid #d0d0d0;
   height: 100%;
 }
+
 body > header > nav > ul > li {
   list-style-type: none;
   display: inline-block;
@@ -42,6 +42,7 @@ body > header > nav > ul > li {
   text-align: right;
   float: right;
 }
+
 body > header > nav > ul > li > a {
   display: block;
   height: 100%;
@@ -54,13 +55,14 @@ body > header > nav > ul > li > a {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 body > header > nav > ul > li > a:hover {
   border-bottom: 5px solid #eeeee0;
 }
+
 body > header > nav > ul > li > a:active {
   border-bottom: 5px solid #d0d0d0;
 }
-
 
 body > header > h1 {
   position: absolute;
@@ -102,13 +104,16 @@ body > main div.studio-equipment dl dt {
   color: #bbbbb0;
   cursor: pointer;
 }
+
 body > main div.studio-equipment dl dt.selected {
   color: #333330;
 }
+
 body > main div.studio-equipment dl dt:hover {
   color: #b8d19a;
-  background-color: rgba(0,0,0,0.02);
+  background-color: rgba(0, 0, 0, 0.02);
 }
+
 body > main div.studio-equipment dl dt.selected:hover {
   color: #7f4d46;
 }
