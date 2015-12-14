@@ -9,7 +9,7 @@
 
   // ~~~ Abbruchbedingung, falls keine IndexedDB vorhanden ist
   if ( iDB === null ) {
-    window.alert("IndexedDB is not supported by your Browser. Therefore you will be unable to use Studio as intended. Please consider installing a browser supporting IndexedDB (see caniuse.com for reference).");
+    window.alert("IndexedDB is not supported by your Browser. Therefore you will be unable to use myStudio as intended. Please consider installing a browser supporting IndexedDB (see caniuse.com for reference).");
     return;
   }
 
@@ -73,8 +73,18 @@
 
 
     APP_DB.Table = function(pTableName, pPrimaryKey, pAutoIncrement) {
+      if ( typeof(pTableName) === 'undefined' ) {
+        window.console.warn("APP_DB_Table: No table name specified");
+        return(null);
+      }
+      if ( typeof(pPrimaryKey) === 'undefined' ) {
+        window.console.warn("APP_DB_Table: PrimaryKey field missing");
+        return(null);
+      }
 
-      var APP_DB_Table = {};
+      var APP_DB_Table = {},
+          mObjectStore = mDBConnection.createObjectStore(pTableName, {keyPath: pPrimaryKey, autoIncrement: pAutoIncrement || false});
+
 
 
       return(APP_DB_Table);
