@@ -1,0 +1,22 @@
+{
+  "name": "event-manager",
+  "version": "1.0.0",
+  "description": "Semesterarbeit für Webprogrammierung",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nejuch/event_manager.git"
+  },
+  "author": "Gruppe 09",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nejuch/event_manager/issues"
+  },
+  "homepage": "https://github.com/nejuch/event_manager#readme",
+  "dependencies": {
+    "bootstrap": "^3.3.6"
+  }
+}
