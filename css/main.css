@@ -117,3 +117,8 @@ body > main div.studio-equipment dl dt:hover {
 body > main div.studio-equipment dl dt.selected:hover {
   color: #7f4d46;
 }
+
+.jumbotron .panel {
+  width: 50%;
+  margin: 0 auto;
+}
