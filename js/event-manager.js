@@ -3,7 +3,8 @@
  *
  */
 (function() {
-  var eventManagerApp = angular.module('eventManagerApp', []);
+  var eventManagerApp = angular.module('eventManagerApp', ['eventManagerDB']);
+
 
 
 });
