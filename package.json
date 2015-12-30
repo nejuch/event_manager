@@ -18,7 +18,6 @@
   "homepage": "https://github.com/nejuch/event_manager#readme",
   "dependencies": {
     "angular": "^1.4.8",
-    "bootstrap": "^3.3.6",
-    "db.js": "^0.10.2"
+    "bootstrap": "^3.3.6"
   }
 }
