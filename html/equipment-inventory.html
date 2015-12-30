@@ -1,0 +1,24 @@
+<dt class="container">
+  <dl ng-repeat="equipment in eqInventory.equipments">
+    <div class="input-group">
+      <span class="input-group-addon equipment.type"></span>
+      <input type="text" class="form-control" value="equipment.name" />
+    </div>
+  </dl>
+
+  <form name="equipmentInventoryAdd" ng-submit="eqInventory.add()">
+    <dl>
+      <div class="input-group">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Equipment <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li ng-repeat="type in eqInventory.types"><a href="#" class="{{type.css}}"> {{type.name}}</a></li>
+          </ul>
+        </div>
+        <input type="text" class="form-control" placeholder="Equipment name" />
+      </div>
+    </dl>
+  </form>
+</dt>

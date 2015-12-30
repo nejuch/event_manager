@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Microphone",
+    "css": "flaticon-mic20"
+  },
+  {
+    "name": "Cable",
+    "css": "flaticon-midi"
+  },
+  {
+    "name": "Speaker",
+    "css": "flaticon-music268"
+  },
+  {
+    "name": "Notes",
+    "css": "flaticon-musical194"
+  },
+  {
+    "name": "Stand",
+    "css": "flaticon-band"
+  },
+  {
+    "name": "Accoustic Guitar",
+    "css": "flaticon-guitars"
+  },
+  {
+    "name": "Electric Guitar",
+    "css": "flaticon-guitar5"
+  },
+  {
+    "name": "Bass",
+    "css": "flaticon-musicalinstrument25"
+  },
+  {
+    "name": "Guitar pedal",
+    "css": "flaticon-electricguitar3"
+  },
+  {
+    "name": "Guitar pedal",
+    "css": "flaticon-musical195"
+  },
+  {
+    "name": "Drumset",
+    "css": "flaticon-drum24"
+  },
+  {
+    "name": "Drums",
+    "css": "flaticon-musicalinstrument36"
+  },
+  {
+    "name": "Cajon",
+    "css": "flaticon-musicalinstrument33"
+  },
+  {
+    "name": "Keyboard",
+    "css": "flaticon-piano23"
+  },
+  {
+    "name": "Synthesizer",
+    "css": "flaticon-synthesizer1"
+  },
+  {
+    "name": "Turntables",
+    "css": "flaticon-musicalinstrument70"
+  },
+  {
+    "name": "Headphones",
+    "css": "flaticon-earphones35"
+  },
+  {
+    "name": "Saxophone",
+    "css": "flaticon-musicalinstrument5"
+  },
+  {
+    "name": "Clarinet",
+    "css": "flaticon-clarinet"
+  },
+  {
+    "name": "Trumpet",
+    "css": "flaticon-trumpet9"
+  },
+  {
+    "name": "Harmonic",
+    "css": "flaticon-harmonic"
+  },
+  {
+    "name": "Flute",
+    "css": "flaticon-flute3"
+  },
+  {
+    "name": "Violin",
+    "css": "flaticon-stringinstrument1"
+  },
+  {
+    "name": "Bagpipe",
+    "css": "flaticon-musicalinstrument29"
+  },
+  {
+    "name": "Accordion",
+    "css": "flaticon-accordion"
+  }
+]

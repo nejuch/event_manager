@@ -23,9 +23,36 @@
     });
   });
 
+  /**
+   * Equipment inventory directive
+   */
+  app.directive('equipmentInventory', ['$http', '$indexedDB', function($http, $indexedDB) {
+    return {
+      restrict: 'E',
+      templateUrl: './html/equipment-inventory.html',
+      /**
+       * Controller for the equipment inventory
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($indexedDB) {
+        var thisController = this;
 
-  app.controller('EventController', function() {
-    this.event = '';
-  });
+        thisController.types      = [];
+        thisController.equipments = [];
+
+        $http.get("./json/equipment-types.json").success(function(pTypes) {
+          thisController.types = pTypes;
+        });
+
+        $indexedDB.openStore('Equipment', function(pStore) {
+          pStore.getAll().then(function(pEquipments) {
+            thisController.equipments = pEquipments;
+          });
+        });
+      },
+      controllerAs: 'eqInventory'
+    };
+  }]);
 
 })();
