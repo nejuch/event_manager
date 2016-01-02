@@ -20,6 +20,15 @@
       pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id'});
       pDatabase.createObjectStore('Tracklist_Track', {keyPath: ['tracklist_id','track_id']});
       pDatabase.createObjectStore('Track', {keyPath: 'track_id'});
+    }).upgradeDatabase(2, function(pEvent, pDatabase, pTransaction) {
+      pDatabase.deleteObjectStore('Equipment');
+      pDatabase.deleteObjectStore('Location');
+      pDatabase.deleteObjectStore('Tracklist');
+      pDatabase.deleteObjectStore('Track');
+      pDatabase.createObjectStore('Equipment', {keyPath: 'equipment_id', autoIncrement: true});
+      pDatabase.createObjectStore('Location', {keyPath: 'location_id', autoIncrement: true});
+      pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id', autoIncrement: true});
+      pDatabase.createObjectStore('Track', {keyPath: 'track_id', autoIncrement: true});
     });
   });
 
@@ -38,8 +47,8 @@
       controller: function($indexedDB) {
         var thisController = this;
 
-        thisController.types      = [];
-        thisController.equipments = [];
+        this.types      = [];
+        this.equipments = [];
 
         $http.get("./json/equipment-types.json").success(function(pTypes) {
           thisController.types = pTypes;
@@ -50,6 +59,31 @@
             thisController.equipments = pEquipments;
           });
         });
+
+        this.add = function() {
+          var eq = {
+            'equipment_typ' : document.equipmentInventoryAdd.elements[0].selectedIndex - 1,
+            'equipment_name': document.equipmentInventoryAdd.elements[1].value
+          };
+
+          $indexedDB.openStore('Equipment', function(pStore) {
+            pStore.insert(eq).then(function() {
+              pStore.getAll().then(function(pEquipments) {
+                thisController.equipments = pEquipments;
+              });
+            });
+          });
+        };
+
+        this.remove = function(pId) {
+          $indexedDB.openStore('Equipment', function(pStore) {
+            pStore.delete(pId).then(function() {
+              pStore.getAll().then(function(pEquipments) {
+                thisController.equipments = pEquipments;
+              });
+            });
+          });
+        };
       },
       controllerAs: 'eqInventory'
     };

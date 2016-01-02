@@ -1,24 +1,33 @@
-<dt class="container">
-  <dl ng-repeat="equipment in eqInventory.equipments">
-    <div class="input-group">
-      <span class="input-group-addon equipment.type"></span>
-      <input type="text" class="form-control" value="equipment.name" />
-    </div>
-  </dl>
-
-  <form name="equipmentInventoryAdd" ng-submit="eqInventory.add()">
-    <dl>
-      <div class="input-group">
-        <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Equipment <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <li ng-repeat="type in eqInventory.types"><a href="#" class="{{type.css}}"> {{type.name}}</a></li>
-          </ul>
-        </div>
-        <input type="text" class="form-control" placeholder="Equipment name" />
+<div class="container">
+  <h3>Equipment</h3>
+  <h4>Inventory</h4>
+  <div class="row show-grid" ng-repeat="equipment in eqInventory.equipments" style="margin-bottom: 1em;">
+    <div class="col-sm-10">
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon {{eqInventory.types[equipment.equipment_typ].css}}" title="{{eqInventory.types[equipment.equipment_typ].name}}"></span>
+        <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
       </div>
-    </dl>
+    </div>
+    <button type="button" class="btn btn-lg btn-danger col-sm-2" ng-click="eqInventory.remove(equipment.equipment_id);"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+  </div>
+
+  <form name="equipmentInventoryAdd" class="row" ng-submit="eqInventory.add(this)">
+    <div class="form-group col-sm-5">
+      <label class="sr-only" for="eqType">Equipment type</label>
+      <div class="input-group input-group-lg">
+        <div class="input-group-addon"><span id="eqAddTypeCurrent" class="glyphicon glyphicon-option-horizontal"></span></div>
+        <select class="form-control" id="eqType" name="eqType" onchange="document.getElementById('eqAddTypeCurrent').className = this.selectedOptions[0].attributes['data-style'].value;" required>
+          <optgroup>
+            <option value="" data-style="glyphicon glyphicon-option-horizontal">Equipment type</option>
+          </optgroup>
+          <option ng-repeat="type in eqInventory.types" data-style="{{type.css}}">{{type.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group col-sm-5">
+      <label class="sr-only" for="eqName">Equipment name</label>
+      <input type="text" class="form-control input-lg" id="eqName" name="eqName" placeholder="Equipment name" required />
+    </div>
+    <button type="submit" class="btn btn-lg btn-success col-sm-2"><span class="glyphicon glyphicon-plus"></span> Add</button>
   </form>
-</dt>
+</div>
