@@ -1,20 +1,19 @@
 <div class="container">
-  <h3>Equipment</h3>
-  <h4>Inventory</h4>
-  <div class="row show-grid" ng-repeat="equipment in eqInventory.equipments" style="margin-bottom: 1em;">
+  <h2>Inventory</h2>
+  <div class="row show-grid" ng-repeat="equipment in inventory.equipments" style="margin-bottom: 1em;">
     <div class="col-xs-10">
       <div class="input-group input-group-lg">
-        <span class="input-group-addon {{eqInventory.types[equipment.equipment_typ].css}}" title="{{eqInventory.types[equipment.equipment_typ].name}}"></span>
+        <span class="input-group-addon {{inventory.types[equipment.equipment_typ].css}}" title="{{inventory.types[equipment.equipment_typ].name}}"></span>
         <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
       </div>
     </div>
-    <button type="button" class="btn btn-lg btn-danger col-xs-2" ng-click="eqInventory.remove(equipment.equipment_id);">
+    <button type="button" class="btn btn-lg btn-danger col-xs-2" ng-click="inventory.remove(equipment.equipment_id);">
       <span class="glyphicon glyphicon-trash"></span>
       <span class="hidden-xs">Remove</span>
     </button>
   </div>
 
-  <form name="equipmentInventoryAdd" class="row" ng-submit="eqInventory.add(this)">
+  <form name="equipmentInventoryAdd" class="row" ng-submit="inventory.add(this)">
     <div class="form-group col-xs-5">
       <label class="sr-only" for="eqType">Type</label>
       <div class="input-group input-group-lg">
@@ -23,7 +22,7 @@
           <optgroup>
             <option value="" data-style="glyphicon glyphicon-option-horizontal">Type</option>
           </optgroup>
-          <option ng-repeat="type in eqInventory.types" data-style="{{type.css}}">{{type.name}}</option>
+          <option ng-repeat="type in inventory.types" data-style="{{type.css}}">{{type.name}}</option>
         </select>
       </div>
     </div>
