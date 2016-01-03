@@ -15,23 +15,37 @@
 
   <script type="text/javascript" src="js/angular.min.js"></script>
   <script type="text/javascript" src="js/angular-indexed-db.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js."></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/event-manager.js"></script>
 </head>
 <body>
 
   <header>
-    <h1>myStudio</h1>
-    <nav>
-      <ul>
-        <!-- Umgekehrte Reihenfolge beachten, wegen float:right -->
-        <li><a href="">Perform</a></li>
-        <li><a href="">Plan</a></li>
-        <li><a href="">Administrate</a></li>
-      </ul>
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#myStudio-NavBar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="glyphicon glyphicon-menu-hamburger"></span>
+          </button>
+          <h1><a class="navbar-brand" href="#">myStudio</a></h1>
+        </div>
+
+        <div id="myStudio-NavBar" class="navbar-collapse collapse">
+          <div class="container">
+            <ul class="nav navbar-nav">
+              <li><a href="">Administrate</a></li>
+              <li><a href="">Plan</a></li>
+              <li><a href="">Perform</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
-  <main>
+  <main role="main">
 
     <div class="container">
       <div class="jumbotron">

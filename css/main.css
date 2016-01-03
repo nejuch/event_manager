@@ -17,33 +17,67 @@ body {
 }
 
 body > header {
-  height: 120px;
+  height: 80px;
   width: 100%;
-  background-image: linear-gradient(#eeeee0 0%, #fffff0 25%);
   position: fixed;
   top: 0;
 }
 
-body > header > nav {
-  padding: 70px 10% 0 25%;
+body > header > nav.navbar {
   height: 100%;
+  background-color: transparent;
+  background-image: linear-gradient(#eeeee0 0%, #fffff0 25%);
 }
 
-body > header > nav > ul {
-  border-bottom: 1px solid #d0d0d0;
-  height: 100%;
+body > header > nav.navbar > .container-fluid {
+  background-color: #fffff0;
+  border-bottom: 1px solid #e7e7e7;
 }
 
-body > header > nav > ul > li {
-  list-style-type: none;
+@media (min-width: 768px) {
+  body > header > nav.navbar > .container-fluid {
+    background-color: inherit;
+    border-bottom-color: transparent;
+  }
+}
+
+body > header > nav.navbar > .container-fluid > .navbar-header > h1 {
   display: inline-block;
-  height: 100%;
-  width: 20%;
-  text-align: right;
-  float: right;
+  width: 10%;
+}
+body > header > nav.navbar > .container-fluid > .navbar-header > h1 > a.navbar-brand {
+  font-family: "Lobster", cursive;
+  font-size: 1.2em;
+  padding: 0.33em 0;
+  margin-left: 0;
 }
 
-body > header > nav > ul > li > a {
+body > header > nav.navbar.navbar-default .navbar-toggle {
+  font-size: 1.5em;
+  padding: 0.67em 1em;
+  margin-top: 20px;
+}
+
+body > header > nav.navbar ul {
+  width: 100%;
+  margin-top: 25px;
+}
+
+body > header > nav.navbar ul > li {
+  list-style-type: none;
+  height: 100%;
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  body > header > nav.navbar ul > li {
+    display: inline-block;
+    width: 33.3333%;
+  }
+}
+
+body > header > nav.navbar ul > li > a {
+  border-bottom: 5px solid transparent;
   display: block;
   height: 100%;
   width: 100%;
@@ -56,21 +90,12 @@ body > header > nav > ul > li > a {
   white-space: nowrap;
 }
 
-body > header > nav > ul > li > a:hover {
+body > header > nav.navbar ul > li > a:hover {
   border-bottom: 5px solid #eeeee0;
 }
 
-body > header > nav > ul > li > a:active {
+body > header > nav.navbar ul > li > a:active {
   border-bottom: 5px solid #d0d0d0;
-}
-
-body > header > h1 {
-  position: absolute;
-  font-family: "Lobster", cursive;
-  font-size: 7em;
-  padding: 0.33em 0;
-  width: 25%;
-  text-align: center;
 }
 
 body > main {
