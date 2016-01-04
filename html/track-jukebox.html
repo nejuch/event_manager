@@ -1,8 +1,11 @@
 <div class="container">
   <h2>Jukebox</h2>
   <div class="media" ng-repeat="track in jukebox.tracks">
-    <div class="media-body col">
-      <h4 class="media-header">{{track.track_title}}</h4>
+    <div class="media-body">
+      <div class="row">
+        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
+        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
+      </div>
       {{track.artist}}
     </div>
     <div class="media-right">
@@ -14,13 +17,21 @@
 
   <form name="jukeboxAdd" class="media" ng-submit="jukebox.add()">
     <div class="media-body">
-      <div class="form-group">
-        <label class="sr-only" for="trackTitle">Title</label>
-        <input type="text" class="form-control input-lg" id="trackTitle" name="trackTitle" placeholder="Title" required />
+      <div class="row">
+        <div class="form-group col-xs-8">
+          <label class="sr-only" for="trackTitle">Title</label>
+          <input type="text" class="form-control input-lg" id="trackTitle" name="trackTitle" placeholder="Title" required />
+        </div>
+        <div class="form-group col-xs-4">
+          <label class="sr-only" for="trackTime">Duration</label>
+          <input type="time" class="form-control input-lg" id="trackTime" name="trackTime" placeholder="Duration" required />
+        </div>
       </div>
-      <div class="form-group">
-        <label class="sr-only" for="trackArtist">Artist</label>
-        <input type="text" class="form-control input-lg" id="trackArtist" name="trackArtist" placeholder="Artist" required />
+      <div class="row">
+        <div class="form-group col-xs-12">
+          <label class="sr-only" for="trackArtist">Artist</label>
+          <input type="text" class="form-control input-lg" id="trackArtist" name="trackArtist" placeholder="Artist" required />
+        </div>
       </div>
     </div>
     <div class="media-right">

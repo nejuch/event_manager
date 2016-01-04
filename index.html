@@ -19,7 +19,7 @@
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/event-manager.js"></script>
 </head>
-<body>
+<body ng-controller="TabControl as tab">
 
   <header>
     <nav class="navbar navbar-default navbar-static-top">
@@ -35,9 +35,15 @@
         <div id="myStudio-NavBar" class="navbar-collapse collapse">
           <div class="container">
             <ul class="nav navbar-nav">
-              <li><a href="">Administrate</a></li>
-              <li><a href="">Plan</a></li>
-              <li><a href="">Perform</a></li>
+              <li ng-class="{ active:tab.isSet(1) }">
+                <a href ng-click="tab.setTab(1)">Administrate</a>
+              </li>
+              <li ng-class="{ active:tab.isSet(2) }">
+                <a href ng-click="tab.setTab(2)">Plan</a>
+              </li>
+              <li ng-class="{ active:tab.isSet(3) }">
+                <a href ng-click="tab.setTab(3)">Perform</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -47,22 +53,31 @@
 
   <main role="main">
 
-    <div class="container">
-      <div class="jumbotron">
-        <h1>Mein Event</h1>
-        <p>blablablablubb</p>
+    <!-- Administration-Tab -->
+    <section ng-show="tab.isSet(1)">
+      <track-jukebox></track-jukebox>
+      <equipment-inventory></equipment-inventory>
+    </section>
+
+    <!-- Planning-Tab -->
+    <section ng-show="tab.isSet(2)">
+      <div class="container">
+        <div class="jumbotron">
+          <h1>Mein Event</h1>
+          <p>blablablablubb</p>
+        </div>
       </div>
-    </div>
-    <nav>
-      <ul class="pager">
-        <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Previous</a></li>
-        <li class="next"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
-      </ul>
-    </nav>
+      <nav>
+        <ul class="pager">
+          <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Previous</a></li>
+          <li class="next"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
+        </ul>
+      </nav>
+    </section>
 
-    <track-jukebox></track-jukebox>
-
-    <equipment-inventory></equipment-inventory>
+    <!-- Performing-Tab -->
+    <section ng-show="tab.isSet(3)">
+    </section>
 
   </main>
 

@@ -33,6 +33,20 @@
   });
 
   /**
+   * Controller for the differet pages of the event manager
+   */
+  app.controller("TabControl", function() {
+    this.tab = 1;
+
+    this.isSet = function(pTab) {
+      return( this.tab === pTab );
+    };
+    this.setTab = function(pTab) {
+      this.tab = pTab;
+    };
+  });
+
+  /**
    * Equipment inventory directive
    */
   app.directive('equipmentInventory', ['$http', '$indexedDB', function($http, $indexedDB) {
@@ -117,7 +131,8 @@
         this.add = function() {
           var track = {
             'track_title': document.jukeboxAdd.elements[0].value,
-            'artist'     : document.jukeboxAdd.elements[1].value
+            'duration'   : document.jukeboxAdd.elements[1].value,
+            'artist'     : document.jukeboxAdd.elements[2].value
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
