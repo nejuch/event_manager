@@ -94,8 +94,14 @@ body > header > nav.navbar ul > li > a:hover {
   border-bottom: 5px solid #eeeee0;
 }
 
-body > header > nav.navbar ul > li > a:active {
+body > header > nav.navbar-default .navbar-nav > li.active > a {
   border-bottom: 5px solid #d0d0d0;
+}
+body > header > nav.navbar-default .navbar-nav > li.active > a,
+body > header > nav.navbar-default .navbar-nav > li.active > a:hover,
+body > header > nav.navbar-default .navbar-nav > li.active > a:focus {
+  background-color: transparent;
+  color: #337ab7;
 }
 
 body > main {
