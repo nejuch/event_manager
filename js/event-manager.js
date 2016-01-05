@@ -56,38 +56,32 @@
         this.types      = [];
         this.equipments = [];
 
+        var setEquipments = function(pEquipments) {
+          thisController.equipments = pEquipments;
+        };
+        var getAllEquipments = function(pStore) {
+          pStore.getAll().then(setEquipments);
+        };
+        $indexedDB.openStore(STORE_NAME, getAllEquipments);
+
         $http.get("./json/equipment-types.json").success(function(pTypes) {
           thisController.types = pTypes;
         });
 
-        $indexedDB.openStore(STORE_NAME, function(pStore) {
-          pStore.getAll().then(function(pEquipments) {
-            thisController.equipments = pEquipments;
-          });
-        });
-
         this.add = function() {
           var eq = {
-            'equipment_typ' : document.jukeboxAdd.elements[0].selectedIndex - 1,
-            'equipment_name': document.jukeboxAdd.elements[1].value
+            'equipment_typ' : document.equipmentInventoryAdd.elements[0].selectedIndex - 1,
+            'equipment_name': document.equipmentInventoryAdd.elements[1].value
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(eq).then(function() {
-              pStore.getAll().then(function(pEquipments) {
-                thisController.equipments = pEquipments;
-              });
-            });
+            pStore.insert(eq).then(getAllEquipments.call(thisController, pStore));
           });
         };
 
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(function() {
-              pStore.getAll().then(function(pEquipments) {
-                thisController.equipments = pEquipments;
-              });
-            });
+            pStore.delete(pId).then(getAllEquipments.call(thisController, pStore));
           });
         };
       },
@@ -113,11 +107,13 @@
 
         this.tracks = [];
 
-        $indexedDB.openStore(STORE_NAME, function(pStore) {
-          pStore.getAll().then(function(pTracks) {
-            thisController.tracks = pTracks;
-          });
-        });
+        var setTracks = function(pTracks) {
+          thisController.tracks = pTracks;
+        };
+        var getAllTracks = function(pStore) {
+          pStore.getAll().then(setTracks);
+        };
+        $indexedDB.openStore(STORE_NAME, getAllTracks);
 
         this.add = function() {
           var track = {
@@ -127,25 +123,62 @@
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(track).then(function() {
-              pStore.getAll().then(function(pTracks) {
-                thisController.tracks = pTracks;
-              });
-            });
+            pStore.insert(track).then(getAllTracks.call(thisController, pStore));
           });
         };
 
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(function() {
-              pStore.getAll().then(function(pTracks) {
-                thisController.tracks = pTracks;
-              });
-            });
+            pStore.delete(pId).then(getAllTracks.call(thisController, pStore));
           });
         };
       },
       controllerAs: 'jukebox'
+    };
+  }]);
+
+  app.directive('eventCarousel', ['$indexedDB', function($indexedDB) {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-carousel.html',
+      /**
+       * Event-Creator Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($indexedDB) {
+        var thisController = this,
+            STORE_NAME     = "Event";
+
+        this.events = [];
+
+        var setEvents = function(pEvents) {
+          thisController.events = pEvents;
+        };
+        var getAllEvents = function(pStore) {
+          pStore.getAll().then(setEvents);
+        };
+        $indexedDB.openStore(STORE_NAME, getAllEvents);
+
+        this.add = function() {
+          var vEvent = {
+            'event_name'       : document.eventCreator.elements[0].value,
+            'timestamp'        : document.eventCreator.elements[1].value,
+            'event_description': document.eventCreator.elements[2].value
+          };
+
+          $indexedDB.openStore(STORE_NAME, function(pStore) {
+            pStore.insert(vEvent).then(getAllEvents.call(thisController, pStore));
+          });
+        };
+
+        this.remove = function(pId) {
+          $indexedDB.openStore(STORE_NAME, function(pStore) {
+            pStore.delete(pId).then(getAllEvents.call(thisController, pStore));
+          });
+        };
+      },
+      controllerAs: 'Event'
     };
   }]);
 
