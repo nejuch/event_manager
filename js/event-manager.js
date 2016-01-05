@@ -21,13 +21,12 @@
       pDatabase.createObjectStore('Tracklist_Track', {keyPath: ['tracklist_id','track_id']});
       pDatabase.createObjectStore('Track', {keyPath: 'track_id'});
     }).upgradeDatabase(2, function(pEvent, pDatabase, pTransaction) {
-      pDatabase.deleteObjectStore('Equipment');
-      pDatabase.deleteObjectStore('Location');
-      pDatabase.deleteObjectStore('Tracklist');
-      pDatabase.deleteObjectStore('Track');
+      pDatabase.createObjectStore('Event', {keyPath: 'person_id', autoIncrement: true});
+      pDatabase.createObjectStore('Event_Equip', {keyPath: ['person_id', 'equipment_id']});
       pDatabase.createObjectStore('Equipment', {keyPath: 'equipment_id', autoIncrement: true});
       pDatabase.createObjectStore('Location', {keyPath: 'location_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id', autoIncrement: true});
+      pDatabase.createObjectStore('Tracklist_Track', {keyPath: ['tracklist_id','track_id']});
       pDatabase.createObjectStore('Track', {keyPath: 'track_id', autoIncrement: true});
     });
   });
