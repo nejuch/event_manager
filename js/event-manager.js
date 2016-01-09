@@ -3,7 +3,7 @@
  *
  */
 (function() {
-  var app = angular.module('eventManager', ['indexedDB']);
+  var app = angular.module('eventManager', ['indexedDB','angular-carousel']);
 
   /**
    * IndexedDB-Configuration
@@ -137,6 +137,13 @@
     };
   }]);
 
+  app.directive('eventCreator', function($indexedDB) {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-creator.html'
+    };
+  });
+
   app.directive('eventCarousel', ['$indexedDB', function($indexedDB) {
     return {
       restrict: 'E',
@@ -178,7 +185,7 @@
           });
         };
       },
-      controllerAs: 'Event'
+      controllerAs: 'carousel'
     };
   }]);
 
