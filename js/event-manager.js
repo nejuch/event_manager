@@ -38,7 +38,7 @@
   });
 
   /**
-   * Equipment inventory directive
+   * Eigenes Tag für das Instrumenteninventar in den Stammdaten
    */
   app.directive('equipmentInventory', ['$http', '$indexedDB', function($http, $indexedDB) {
     return {
@@ -56,18 +56,20 @@
         this.types      = [];
         this.equipments = [];
 
-        var setEquipments = function(pEquipments) {
-          thisController.equipments = pEquipments;
-        };
+        /**
+         * Hilfsfunktion zum Laden aller Lieder, da es mehrfach benötigt wird
+         * @param {object} pStore Verbindung zu einem ObjectStore
+         */
         var getAllEquipments = function(pStore) {
-          pStore.getAll().then(setEquipments);
+          pStore.getAll().then(function(pEquipments) {
+            thisController.equipments = pEquipments;
+          });
         };
-        $indexedDB.openStore(STORE_NAME, getAllEquipments);
 
-        $http.get("./json/equipment-types.json").success(function(pTypes) {
-          thisController.types = pTypes;
-        });
-
+        /**
+         * Hinzufügen eines Instruments
+         * Nach erfolgreichem Hinzufügen wird das Inventar aktualisiert
+         */
         this.add = function() {
           var eq = {
             'equipment_typ' : document.equipmentInventoryAdd.elements[0].selectedIndex - 1,
@@ -81,6 +83,10 @@
           });
         };
 
+        /**
+         * Entfernen eines Instruments
+         * Nach erfolgreichem Entfernen wird das Inventar aktualisiert
+         */
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
             pStore.delete(pId).then(function() {
@@ -88,13 +94,21 @@
             });
           });
         };
+
+        // ~~~ Zum Seitenstart das Inventar laden
+        $indexedDB.openStore(STORE_NAME, getAllEquipments);
+
+        // ~~~ Zum Seitenstart die möglichen Instrumente laden
+        $http.get("./json/equipment-types.json").success(function(pTypes) {
+          thisController.types = pTypes;
+        });
       },
       controllerAs: 'inventory'
     };
   }]);
 
   /**
-   * Track jukebox directive
+   * Eigenes Tag für die Lieder in den Stammdaten
    */
   app.directive('trackJukebox', ['$http', '$indexedDB', function($http, $indexedDB) {
     return {
@@ -111,14 +125,20 @@
 
         this.tracks = [];
 
-        var setTracks = function(pTracks) {
-          thisController.tracks = pTracks;
-        };
+        /**
+         * Hilfsfunktion zum Laden aller Lieder, da es mehrfach benötigt wird
+         * @param {object} pStore Verbindung zu einem ObjectStore
+         */
         var getAllTracks = function(pStore) {
-          pStore.getAll().then(setTracks);
+          pStore.getAll().then(function(pTracks) {
+            thisController.tracks = pTracks;
+          });
         };
-        $indexedDB.openStore(STORE_NAME, getAllTracks);
 
+        /**
+         * Hinzufügen eines Lieds
+         * Nach erfolgreichem Hinzufügen wird das Array der Lieder aktualisiert
+         */
         this.add = function() {
           var track = {
             'track_title': document.jukeboxAdd.elements[0].value,
@@ -133,6 +153,10 @@
           });
         };
 
+        /**
+         * Entfernen eines Lieds
+         * Nach erfolgreichem Entfernen wird das Array der Lieder aktualisiert
+         */
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
             pStore.delete(pId).then(function() {
@@ -140,11 +164,17 @@
             });
           });
         };
+
+        // ~~~ Zum Seitenstart die Lieder laden
+        $indexedDB.openStore(STORE_NAME, getAllTracks);
       },
       controllerAs: 'jukebox'
     };
   }]);
 
+  /**
+   * Eigenes Tag für das modale Formular zum Hinzufügen eines Events
+   */
   app.directive('eventCreator', function($indexedDB) {
     return {
       restrict: 'E',
@@ -152,6 +182,9 @@
     };
   });
 
+  /**
+   * Eigenes Tag zur Anzeige aller verfügbaren Events und zur Auswahl eines Events aus der Liste.
+   */
   app.directive('eventCarousel', ['$indexedDB', function($indexedDB) {
     return {
       restrict: 'E',
@@ -162,19 +195,34 @@
        * @param {object} $indexedDB IndexedDB service
        */
       controller: function($indexedDB) {
-        var thisController = this,
-            STORE_NAME     = "Event";
+        var thisController  = this,
+            STORE_NAME      = "Event";
 
-        this.events = [];
+        this.events  = [];
+        this.current = 0;
 
-        var setEvents = function(pEvents) {
-          thisController.events = pEvents;
-        };
+        /**
+         * Hilfsfunktion zum Laden aller Events, da es mehrfach benötigt wird
+         * @param {object} pStore Verbindung zu einem ObjectStore
+         */
         var getAllEvents = function(pStore) {
-          pStore.getAll().then(setEvents);
+          pStore.getAll().then(function(pEvents) {
+            thisController.events = pEvents;
+          });
         };
-        $indexedDB.openStore(STORE_NAME, getAllEvents);
 
+        /**
+         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
+         * @param {object} pEvent slid.bs.carousel-Event
+         */
+        $('#event-carousel').on('slid.bs.carousel', function (pEvent) {
+          this.current = pEvent;
+        });
+
+        /**
+         * Hinzufügen eines Events
+         * Nach erfolgreichem Hinzufügen wird das Array der Events nachgeladen und der modale Dialog mit dem Formular geschlossen.
+         */
         this.add = function() {
           var vEvent = {
             'event_name'       : document.eventCreator.eventName.value,
@@ -190,6 +238,10 @@
           });
         };
 
+        /**
+         * Entfernen eines Events
+         * Nach erfolgreichem Entfernen wird zunächst das Karussel umpositioniert und danach das Array der Events nachgeladen.
+         */
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
             $('#event-carousel').carousel('prev');
@@ -198,8 +250,39 @@
             });
           });
         };
+
+        // ~~~ Zum Seitenstart die Events laden
+        $indexedDB.openStore(STORE_NAME, getAllEvents);
       },
       controllerAs: 'carousel'
+    };
+  }]);
+
+  /**
+   * Eigenes Tag für das aktuell ausgewählte Event
+   */
+  app.directive('eventPlanner', ['$indexedDB', function($indexedDB) {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-planner.html',
+      /**
+       * Event-Planner Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($indexedDB) {
+        var thisController = this;
+
+        this.event = {};
+
+        /**
+         * Das aktuelle Event übernehmen
+         */
+        this.setEvent = function(pEvent) {
+          this.event = pEvent;
+        };
+      },
+      controllerAs: 'planner'
     };
   }]);
 
