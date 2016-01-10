@@ -1,7 +1,7 @@
-<div id="event-carousel" class="carousel slide">
+<div id="event-carousel" class="carousel slide" data-interval="false">
   <!-- Indicators -->
   <ol class="carousel-indicators">
-    <li data-target="#event-carousel" data-slide-to="0"></li>
+    <li data-target="#event-carousel" class="active" data-slide-to="0"></li>
     <li data-target="#event-carousel" ng-repeat="event in carousel.events" data-slide-to="{{event.event_id}}"></li>
   </ol>
 
@@ -22,16 +22,22 @@
     <div class="item" ng-repeat="event in carousel.events" >
       <div class="container">
         <div class="carousel-caption">
+
+          <h1 class="clearfix">
+            <button type="button" class="close pull-left" aria-label="Close" ng-click="carousel.remove(event.event_id)"><span aria-hidden="true">&times; Remove</span></button>
+            <small class="pull-right">{{event.timestamp.toLocaleString()}}</small>
+          </h1>
           <h1>
             {{event.event_name}}
-            <small class="pull-right">{{event.timestamp}}</small>
           </h1>
           <p>
             {{event.event_description}}
           </p>
+
+          <h3>Todo:</h3>
           <div class="row">
             <div class="col-xs-4">
-              <button type="button" class="btn btn-primary btn-lg col-xs-12">
+              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.tracks.length, 'btn-warning':!event.tracks.length}">
                 <h3>Tracklist:</h3>
                 <p>
                   {{event.tracks.length}}<br>
@@ -40,7 +46,7 @@
               </button>
             </div>
             <div class="col-xs-4">
-              <button type="button" class="btn btn-primary btn-lg col-xs-12">
+              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.equipments.length, 'btn-warning':!event.equipments.length}">
                 <h3>Equipment:</h3>
                 <p>
                   {{event.equipments.length}}<br>
@@ -49,11 +55,15 @@
               </button>
             </div>
             <div class="col-xs-4">
-              <button type="button" class="btn btn-primary btn-lg col-xs-12">
+              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.location, 'btn-warning':!event.location}">
                 <h3>Location:</h3>
-                <address>
+                <p ng-hide="event.location">
+                  <br>
+                  None
+                </p>
+                <address ng-show="event.location">
                   {{event.location.street}}<br>
-                  {{event.location.zip}}, {{event.location.city}}
+                  {{event.location.zip + ", " + event.location.city}}
                 </address>
               </button>
             </div>

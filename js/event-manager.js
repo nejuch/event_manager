@@ -3,7 +3,7 @@
  *
  */
 (function() {
-  var app = angular.module('eventManager', ['indexedDB','angular-carousel']);
+  var app = angular.module('eventManager', ['indexedDB']);
 
   /**
    * IndexedDB-Configuration
@@ -13,8 +13,8 @@
 
     // ~~~ Create initial database version
     db.upgradeDatabase(1, function(pEvent, pDatabase, pTransaction) {
-      pDatabase.createObjectStore('Event', {keyPath: 'person_id', autoIncrement: true});
-      pDatabase.createObjectStore('Event_Equip', {keyPath: ['person_id', 'equipment_id']});
+      pDatabase.createObjectStore('Event', {keyPath: 'event_id', autoIncrement: true});
+      pDatabase.createObjectStore('Event_Equip', {keyPath: ['event_id', 'equipment_id']});
       pDatabase.createObjectStore('Equipment', {keyPath: 'equipment_id', autoIncrement: true});
       pDatabase.createObjectStore('Location', {keyPath: 'location_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id', autoIncrement: true});
@@ -169,9 +169,9 @@
 
         this.add = function() {
           var vEvent = {
-            'event_name'       : document.eventCreator.elements[0].value,
-            'timestamp'        : document.eventCreator.elements[1].value,
-            'event_description': document.eventCreator.elements[2].value
+            'event_name'       : document.eventCreator.eventName.value,
+            'timestamp'        : new Date(document.eventCreator.eventDate.value + "T" + document.eventCreator.eventHour.value + ":" + document.eventCreator.eventMinute.value + ":00"),
+            'event_description': document.eventCreator.eventDescription.value
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
