@@ -27,7 +27,7 @@
    * Controller for the differet pages of the event manager
    */
   app.controller("TabControl", function() {
-    this.tab = 1;
+    this.tab = 2;
 
     this.isSet = function(pTab) {
       return( this.tab === pTab );
@@ -75,13 +75,17 @@
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(eq).then(getAllEquipments.call(thisController, pStore));
+            pStore.insert(eq).then(function() {
+              getAllEquipments.call(thisController, pStore)
+            });
           });
         };
 
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(getAllEquipments.call(thisController, pStore));
+            pStore.delete(pId).then(function() {
+              getAllEquipments.call(thisController, pStore)
+            });
           });
         };
       },
@@ -123,13 +127,17 @@
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(track).then(getAllTracks.call(thisController, pStore));
+            pStore.insert(track).then(function() {
+              getAllTracks.call(thisController, pStore)
+            });
           });
         };
 
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(getAllTracks.call(thisController, pStore));
+            pStore.delete(pId).then(function() {
+              getAllTracks.call(thisController, pStore)
+            });
           });
         };
       },
@@ -175,13 +183,19 @@
           };
 
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(vEvent).then(getAllEvents.call(thisController, pStore));
+            pStore.insert(vEvent).then(function() {
+              getAllEvents.call(thisController, pStore);
+              $('#eventCreatorModal').modal('hide');
+            });
           });
         };
 
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(getAllEvents.call(thisController, pStore));
+            $('#event-carousel').carousel('prev');
+            pStore.delete(pId).then(function () {
+              getAllEvents.call(thisController, pStore);
+            });
           });
         };
       },
