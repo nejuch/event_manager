@@ -212,14 +212,6 @@
         };
 
         /**
-         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
-         * @param {object} pEvent slid.bs.carousel-Event
-         */
-        $('#event-carousel').on('slid.bs.carousel', function (pEvent) {
-          this.current = pEvent;
-        });
-
-        /**
          * Hinzufügen eines Events
          * Nach erfolgreichem Hinzufügen wird das Array der Events nachgeladen und der modale Dialog mit dem Formular geschlossen.
          */
@@ -271,19 +263,58 @@
        * @param {object} $indexedDB IndexedDB service
        */
       controller: function($indexedDB) {
-        var thisController = this;
+        var thisController  = this,
+            STORE_TRACKLIST = "Tracklist",
+            STORE_LOCATION  = "Location",
+            STORE_EQUIPMENT = "Event_Equip";
 
-        this.event = {};
+        this.event    = {};
+        this.location = {};
 
         /**
-         * Das aktuelle Event übernehmen
+         * Hilfsfunktion zum Laden des Ortes der Veranstaltung
+         * @param {object} pStore Verbindung zu einem ObjectStore
          */
-        this.setEvent = function(pEvent) {
-          this.event = pEvent;
+        var getLocation = function(pStore) {
+          pStore.find(thisController.event.location).then(function(pLocation) {
+            thisController.location = pLocation;
+          });
         };
+
+        /**
+         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
+         * @param {object} pEvent slid.bs.carousel-Event
+         */
+        $('#event-carousel').on('slid.bs.carousel', function (pEvent) {
+          this.event = pEvent.relatedTarget.getAttribute("data-event-id");
+
+          // ~~~ Ort aktualisieren
+          $indexedDB.openStore(STORE_LOCATION, getLocation);
+        });
+
+        /**
+         * Den Veranstaltungsort setzen
+         */
+        this.setLocation = function() {
+          this.event = pEvent;
+
+          // ~~~ Ort aktualisieren
+          $indexedDB.openStore(STORE_LOCATION, getLocation);
+        };
+
       },
       controllerAs: 'planner'
     };
   }]);
+
+  /**
+   * Eigenes Tag für den Veranstaltungsort des aktuell ausgewählten Events
+   */
+  app.directive('eventLocation', function() {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-location.html'
+    };
+  });
 
 })();
