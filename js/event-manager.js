@@ -183,6 +183,89 @@
   });
 
   /**
+   * Eigenes Tag für das aktuell ausgewählte Event
+   */
+  app.directive('eventPlanner', ['$indexedDB', function($indexedDB) {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-planner.html',
+      /**
+       * Event-Planner Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($indexedDB) {
+        var thisController  = this,
+            STORE_EVENT     = "Event",
+            STORE_TRACKLIST = "Tracklist",
+            STORE_LOCATION  = "Location",
+            STORE_EQUIPMENT = "Event_Equip";
+
+        this.event    = {};
+        this.location = {};
+
+        /**
+         * Hilfsfunktion zum Laden des Ortes der Veranstaltung
+         * @param {object} pStore Verbindung zu einem ObjectStore
+         */
+        var getLocation = function(pStore) {
+          pStore.find(thisController.event.location).then(function(pLocation) {
+            thisController.location = pLocation;
+
+            // ~~~ Das Event muss aktualisiert werden, wenn sich die Location_id geändert hat.
+            if ( thisController.event.location !== thisController.location.location_id ) {
+              this.event.location = thisController.location.location_id;
+              $indexedDB.openStore(STORE_EVENT, function(pStore) {
+                pStore.upsert(this.event).then(function() {
+                  // ~~~ TODO: onUpsertEvent
+                });
+              });
+            }
+          });
+        };
+
+        /**
+         * Event-Handler um auf das Karussel zu reagieren und den aktuellen Index merken
+         * @param {object} pEvent slid.bs.carousel-Event
+         */
+        $scope.$on('eventManager.carousel', function (pEvt, pEventId) {
+          $indexedDB.openStore(STORE_LOCATION, function(pStore) {
+            pStore.find(pEventId).then(function(pEvent) {
+              this.event = pEvent;
+            });
+          });
+
+          // ~~~ Ort aktualisieren
+          document.eventLocation.clear();
+          if ( Object.keys(this.event) > 0 ) {
+            $indexedDB.openStore(STORE_LOCATION, getLocation);
+          }
+        });
+
+        /**
+         * Den Veranstaltungsort setzen
+         */
+        this.setLocation = function() {
+          var vLocation = {
+            'location_id': this.event.location,
+            'street'     : document.eventLocation.locationStreet.value,
+            'zip'        : document.eventLocation.locationZIP.value,
+            'city'       : document.eventLocation.locationCity.value
+          };
+
+          $indexedDB.openStore(STORE_LOCATION, function(pStore) {
+            pStore.upsert(vLocation).then(function() {
+              getLocation.call(thisController, pStore);
+            });
+          });
+        };
+
+      },
+      controllerAs: 'planner'
+    };
+  }]);
+
+  /**
    * Eigenes Tag zur Anzeige aller verfügbaren Events und zur Auswahl eines Events aus der Liste.
    */
   app.directive('eventCarousel', ['$indexedDB', function($indexedDB) {
@@ -198,8 +281,8 @@
         var thisController  = this,
             STORE_NAME      = "Event";
 
-        this.events  = [];
         this.current = 0;
+        this.events  = [];
 
         /**
          * Hilfsfunktion zum Laden aller Events, da es mehrfach benötigt wird
@@ -210,6 +293,14 @@
             thisController.events = pEvents;
           });
         };
+
+        /**
+         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
+         * @param {object} pEvent slid.bs.carousel-Event
+         */
+        $('#event-carousel').on('slid.bs.carousel', function (pEvt) {
+          $scope.$emit('eventManager.carousel', pEvt.relatedTarget.getAttribute("data-event-id"));
+        });
 
         /**
          * Hinzufügen eines Events
@@ -247,63 +338,6 @@
         $indexedDB.openStore(STORE_NAME, getAllEvents);
       },
       controllerAs: 'carousel'
-    };
-  }]);
-
-  /**
-   * Eigenes Tag für das aktuell ausgewählte Event
-   */
-  app.directive('eventPlanner', ['$indexedDB', function($indexedDB) {
-    return {
-      restrict: 'E',
-      templateUrl: './html/event-planner.html',
-      /**
-       * Event-Planner Controller
-       * @author m11t
-       * @param {object} $indexedDB IndexedDB service
-       */
-      controller: function($indexedDB) {
-        var thisController  = this,
-            STORE_TRACKLIST = "Tracklist",
-            STORE_LOCATION  = "Location",
-            STORE_EQUIPMENT = "Event_Equip";
-
-        this.event    = {};
-        this.location = {};
-
-        /**
-         * Hilfsfunktion zum Laden des Ortes der Veranstaltung
-         * @param {object} pStore Verbindung zu einem ObjectStore
-         */
-        var getLocation = function(pStore) {
-          pStore.find(thisController.event.location).then(function(pLocation) {
-            thisController.location = pLocation;
-          });
-        };
-
-        /**
-         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
-         * @param {object} pEvent slid.bs.carousel-Event
-         */
-        $('#event-carousel').on('slid.bs.carousel', function (pEvent) {
-          this.event = pEvent.relatedTarget.getAttribute("data-event-id");
-
-          // ~~~ Ort aktualisieren
-          $indexedDB.openStore(STORE_LOCATION, getLocation);
-        });
-
-        /**
-         * Den Veranstaltungsort setzen
-         */
-        this.setLocation = function() {
-          this.event = pEvent;
-
-          // ~~~ Ort aktualisieren
-          $indexedDB.openStore(STORE_LOCATION, getLocation);
-        };
-
-      },
-      controllerAs: 'planner'
     };
   }]);
 
