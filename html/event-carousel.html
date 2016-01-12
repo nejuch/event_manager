@@ -2,7 +2,7 @@
   <!-- Indicators -->
   <ol class="carousel-indicators">
     <li data-target="#event-carousel" class="active" data-slide-to="0"></li>
-    <li data-target="#event-carousel" ng-repeat="event in carousel.events" data-slide-to="{{event.event_id}}"></li>
+    <li data-target="#event-carousel" ng-repeat="event in carousel.provider.events" data-slide-to="{{event.event_id}}"></li>
   </ol>
 
   <!-- Wrapper for slides -->
@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="item" ng-repeat="event in carousel.events" data-event-id="{{event.event_id}}">
+    <div class="item" ng-repeat="event in carousel.provider.events" data-event-id="{{event.event_id}}">
       <div class="container">
         <div class="carousel-caption">
 
@@ -65,13 +65,13 @@
             <div class="col-xs-4">
               <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.location, 'btn-warning':!event.location}">
                 <h3>Location:</h3>
-                <p ng-hide="event.location">
+                <p ng-hide="event.street !== '' || event.zip !== '' || event.city !== ''">
                   <br>
                   None
                 </p>
-                <address ng-show="event.location">
-                  {{event.location.street}}<br>
-                  {{event.location.zip + ", " + event.location.city}}
+                <address ng-show="event.street !== '' || event.zip !== '' || event.city !== ''">
+                  {{event.street}}<br>
+                  {{event.zip + ", " + event.city}}
                 </address>
               </button>
             </div>

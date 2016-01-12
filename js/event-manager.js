@@ -45,26 +45,22 @@
   app.service('currentEventProvider', ['$indexedDB', function($indexedDB) {
     var thisFactory = this;
 
+    thisFactory.eventIdx = 0;
     thisFactory.eventId  = 0;
     thisFactory.event    = {};
-    thisFactory.location = {};
+    thisFactory.events   = [];
 
     /**
      * Hilfsfunktion zum Laden des Ortes der Veranstaltung
-     * @param {object} pStore Verbindung zu einem ObjectStore
+     * @param {number} pIdx Nummer des nach der Aktualisierung aktiven Events im Karussel
      */
-    function getLocation() {
-      $indexedDB.openStore(STORE_LOCATION, function(pStore) {
-        pStore.find(thisFactory.event.location).then(function(pLocation) {
-          thisFactory.location = pLocation;
-
-          // ~~~ Das Event muss aktualisiert werden, wenn sich die Location_id geändert hat.
-          if ( thisFactory.event.location !== thisFactory.location.location_id ) {
-            thisFactory.event.location = thisFactory.location.location_id;
-            $indexedDB.openStore(STORE_EVENT, function(pStore) {
-              pStore.upsert(thisFactory.event).then(function() {
-                // ~~~ TODO: onUpsertEvent
-              });
+    function getAllEvents(pIdx) {
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
+        pStore.getAll().then(function(pEvents) {
+          thisFactory.events = pEvents;
+          if ( typeof(pIdx) !== 'undefined' ) {
+            $rootScope.$evalAsync(function() {
+              $('#event-carousel .carousel-inner .item').eq(pIdx).toggleClass('active');
             });
           }
         });
@@ -72,20 +68,74 @@
     }
 
     /**
+     * Hilfsfunktion zum Ermitteln des Indexes eines Events innerhalb der Events von der Datenbank
+     * @param {number} pEventId Primärkey
+     */
+    function getEventIdx(pEventId) {
+      var i;
+      for (i=0; i<thisFactory.events.length; i++) {
+        if ( thisFactory.events[i].event_id === pEventId ) {
+          return(i);
+        }
+      }
+      return(-1);
+    }
+
+    /**
      * Das aktuelle Event aktualisieren damit der Planner und das Karussel darauf zugreifen können
-     * @param {object} pEventId Indexnummer des aktiven Events in der Datenbank
+     * @param {number} pEventId Indexnummer des aktiven Events in der Datenbank
      */
     this.updateEvent = function(pEventId) {
-      thisFactory.eventId = Number(pEventId);
+      thisFactory.eventId  = Number(pEventId);
       if ( thisFactory.isCreator() ) {
+        thisFactory.eventIdx = 0;
         thisFactory.event    = {};
         thisFactory.location = {};
       }
 
       $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.find(thisFactory.eventId).then(function(pEvent) {
-          thisFactory.event = pEvent;
-          getLocation();
+          thisFactory.event    = pEvent;
+          thisFactory.eventIdx = getEventIdx(thisFactory.eventId);
+        });
+      });
+    };
+
+    /**
+     * Eine Veranstaltung hinzufügen
+     * Nach erfolgreichem Hinzufügen wird zunächst das modale Fenster geschlossen und danach das Array der Events nachgeladen.
+     * @param {object} pEvent Datensatz
+     */
+    this.addEvent = function(pEvent) {
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
+        pStore.insert(pEvent).then(function() {
+          $('#eventCreatorModal').modal('hide'); // ~~~ Modalen dialog schließen
+          getAllEvents(thisFactory.events.length);
+        });
+      });
+    };
+
+    /**
+     * Eine Veranstaltung entfernen
+     * Nach erfolgreichem Entfernen wird das Array der Events nachgeladen.
+     * @param {number} pEventId Index
+     */
+    this.removeEvent = function(pEventId) {
+      $indexedDB.openStore(STORE_NAME, function(pStore) {
+        pStore.delete(pEventId).then(function() {
+          getAllEvents();
+        });
+      });
+    };
+
+    /**
+     * Den Veranstaltungsort aktualisieren
+     * @param {object} pLocation Datensatz
+     */
+    this.writeLocation = function(pLocation) {
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
+        pStore.upsert(thisFactory.event).then(function() {
+          getAllEvents(thisFactory.eventIdx);
         });
       });
     };
@@ -94,6 +144,8 @@
       return( thisFactory.eventId === 0 );
     };
 
+    // ~~~ Zum Start alle Events laden
+    getAllEvents();
   }]);
 
   /**
@@ -267,17 +319,11 @@
          */
         thisController.setLocation = function() {
           var vLocation = {
-            'location_id': thisController.provider.event.location,
             'street'     : document.eventLocation.locationStreet.value,
             'zip'        : document.eventLocation.locationZIP.value,
             'city'       : document.eventLocation.locationCity.value
           };
-
-          $indexedDB.openStore(STORE_LOCATION, function(pStore) {
-            pStore.upsert(vLocation).then(function() {
-              getLocation.call(thisController, pStore);
-            });
-          });
+          thisController.provider.writeLocation(vLocation);
         };
 
       },
@@ -302,17 +348,6 @@
             STORE_NAME      = "Event";
 
         thisController.provider = currentEventProvider;
-        thisController.events   = [];
-
-        /**
-         * Hilfsfunktion zum Laden aller Events, da es mehrfach benötigt wird
-         * @param {object} pStore Verbindung zu einem ObjectStore
-         */
-        var getAllEvents = function(pStore) {
-          pStore.getAll().then(function(pEvents) {
-            thisController.events = pEvents;
-          });
-        };
 
         /**
          * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
@@ -324,7 +359,6 @@
 
         /**
          * Hinzufügen eines Events
-         * Nach erfolgreichem Hinzufügen wird das Array der Events nachgeladen und der modale Dialog mit dem Formular geschlossen.
          */
         this.add = function() {
           var vEvent = {
@@ -332,31 +366,19 @@
             'timestamp'        : new Date(document.eventCreator.eventDate.value + "T" + document.eventCreator.eventHour.value + ":" + document.eventCreator.eventMinute.value + ":00"),
             'event_description': document.eventCreator.eventDescription.value
           };
-
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(vEvent).then(function() {
-              getAllEvents.call(thisController, pStore);
-              $('#eventCreatorModal').modal('hide'); // ~~~ Modalen dialog schließen
-              document.eventCreator.reset(); // ~~~ Formular leeren
-            });
-          });
+          thisController.provider.addEvent(vEvent);
+          document.eventCreator.reset(); // ~~~ Formular leeren
         };
 
         /**
-         * Entfernen eines Events
-         * Nach erfolgreichem Entfernen wird zunächst das Karussel umpositioniert und danach das Array der Events nachgeladen.
+         * Entfernen eines Events.
+         * Nach erfolgreichem Entfernen wird zunächst das Karussel umpositioniert
+         * @param {number} pId Index
          */
         this.remove = function(pId) {
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            $('#event-carousel').carousel(0);
-            pStore.delete(pId).then(function () {
-              getAllEvents.call(thisController, pStore);
-            });
-          });
+          $('#event-carousel').carousel(0);
+          thisController.provider.removeEvent(pId);
         };
-
-        // ~~~ Zum Seitenstart die Events laden
-        $indexedDB.openStore(STORE_NAME, getAllEvents);
       },
       controllerAs: 'carousel'
     };
