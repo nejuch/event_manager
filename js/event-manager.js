@@ -3,7 +3,9 @@
  *
  */
 (function() {
-  var app = angular.module('eventManager', ['indexedDB']);
+  var STORE_EVENT    = "Event",
+      STORE_LOCATION = "Loation",
+      app = angular.module('eventManager', ['indexedDB']);
 
   /**
    * IndexedDB-Configuration
@@ -13,10 +15,10 @@
 
     // ~~~ Create initial database version
     db.upgradeDatabase(1, function(pEvent, pDatabase, pTransaction) {
-      pDatabase.createObjectStore('Event', {keyPath: 'event_id', autoIncrement: true});
+      pDatabase.createObjectStore(STORE_EVENT, {keyPath: 'event_id', autoIncrement: true});
       pDatabase.createObjectStore('Event_Equip', {keyPath: ['event_id', 'equipment_id']});
       pDatabase.createObjectStore('Equipment', {keyPath: 'equipment_id', autoIncrement: true});
-      pDatabase.createObjectStore('Location', {keyPath: 'location_id', autoIncrement: true});
+      pDatabase.createObjectStore(STORE_LOCATION, {keyPath: 'location_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist_Track', {keyPath: ['tracklist_id','track_id']});
       pDatabase.createObjectStore('Track', {keyPath: 'track_id', autoIncrement: true});
@@ -36,6 +38,63 @@
       this.tab = pTab;
     };
   });
+
+  /**
+   * Gemeinsam genutzter Dienst, der das aktuelle Event zur Verfügung stellt.
+   */
+  app.service('currentEventProvider', ['$indexedDB', function($indexedDB) {
+    var thisFactory = this;
+
+    thisFactory.eventId  = 0;
+    thisFactory.event    = {};
+    thisFactory.location = {};
+
+    /**
+     * Hilfsfunktion zum Laden des Ortes der Veranstaltung
+     * @param {object} pStore Verbindung zu einem ObjectStore
+     */
+    function getLocation() {
+      $indexedDB.openStore(STORE_LOCATION, function(pStore) {
+        pStore.find(thisFactory.event.location).then(function(pLocation) {
+          thisFactory.location = pLocation;
+
+          // ~~~ Das Event muss aktualisiert werden, wenn sich die Location_id geändert hat.
+          if ( thisFactory.event.location !== thisFactory.location.location_id ) {
+            thisFactory.event.location = thisFactory.location.location_id;
+            $indexedDB.openStore(STORE_EVENT, function(pStore) {
+              pStore.upsert(thisFactory.event).then(function() {
+                // ~~~ TODO: onUpsertEvent
+              });
+            });
+          }
+        });
+      });
+    }
+
+    /**
+     * Das aktuelle Event aktualisieren damit der Planner und das Karussel darauf zugreifen können
+     * @param {object} pEventId Indexnummer des aktiven Events in der Datenbank
+     */
+    this.updateEvent = function(pEventId) {
+      thisFactory.eventId = Number(pEventId);
+      if ( thisFactory.isCreator() ) {
+        thisFactory.event    = {};
+        thisFactory.location = {};
+      }
+
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
+        pStore.find(thisFactory.eventId).then(function(pEvent) {
+          thisFactory.event = pEvent;
+          getLocation();
+        });
+      });
+    };
+
+    this.isCreator = function() {
+      return( thisFactory.eventId === 0 );
+    };
+
+  }]);
 
   /**
    * Eigenes Tag für das Instrumenteninventar in den Stammdaten
@@ -194,60 +253,21 @@
        * @author m11t
        * @param {object} $indexedDB IndexedDB service
        */
-      controller: function($indexedDB) {
+      controller: function($indexedDB, currentEventProvider) {
         var thisController  = this,
             STORE_EVENT     = "Event",
             STORE_TRACKLIST = "Tracklist",
             STORE_LOCATION  = "Location",
             STORE_EQUIPMENT = "Event_Equip";
 
-        this.event    = {};
-        this.location = {};
-
-        /**
-         * Hilfsfunktion zum Laden des Ortes der Veranstaltung
-         * @param {object} pStore Verbindung zu einem ObjectStore
-         */
-        var getLocation = function(pStore) {
-          pStore.find(thisController.event.location).then(function(pLocation) {
-            thisController.location = pLocation;
-
-            // ~~~ Das Event muss aktualisiert werden, wenn sich die Location_id geändert hat.
-            if ( thisController.event.location !== thisController.location.location_id ) {
-              this.event.location = thisController.location.location_id;
-              $indexedDB.openStore(STORE_EVENT, function(pStore) {
-                pStore.upsert(this.event).then(function() {
-                  // ~~~ TODO: onUpsertEvent
-                });
-              });
-            }
-          });
-        };
-
-        /**
-         * Event-Handler um auf das Karussel zu reagieren und den aktuellen Index merken
-         * @param {object} pEvent slid.bs.carousel-Event
-         */
-        $scope.$on('eventManager.carousel', function (pEvt, pEventId) {
-          $indexedDB.openStore(STORE_LOCATION, function(pStore) {
-            pStore.find(pEventId).then(function(pEvent) {
-              this.event = pEvent;
-            });
-          });
-
-          // ~~~ Ort aktualisieren
-          document.eventLocation.clear();
-          if ( Object.keys(this.event) > 0 ) {
-            $indexedDB.openStore(STORE_LOCATION, getLocation);
-          }
-        });
+        thisController.provider = currentEventProvider;
 
         /**
          * Den Veranstaltungsort setzen
          */
-        this.setLocation = function() {
+        thisController.setLocation = function() {
           var vLocation = {
-            'location_id': this.event.location,
+            'location_id': thisController.provider.event.location,
             'street'     : document.eventLocation.locationStreet.value,
             'zip'        : document.eventLocation.locationZIP.value,
             'city'       : document.eventLocation.locationCity.value
@@ -277,12 +297,12 @@
        * @author m11t
        * @param {object} $indexedDB IndexedDB service
        */
-      controller: function($indexedDB) {
+      controller: function($indexedDB, currentEventProvider) {
         var thisController  = this,
             STORE_NAME      = "Event";
 
-        this.current = 0;
-        this.events  = [];
+        thisController.provider = currentEventProvider;
+        thisController.events   = [];
 
         /**
          * Hilfsfunktion zum Laden aller Events, da es mehrfach benötigt wird
@@ -299,7 +319,7 @@
          * @param {object} pEvent slid.bs.carousel-Event
          */
         $('#event-carousel').on('slid.bs.carousel', function (pEvt) {
-          $scope.$emit('eventManager.carousel', pEvt.relatedTarget.getAttribute("data-event-id"));
+          thisController.provider.updateEvent(pEvt.relatedTarget.getAttribute("data-event-id"));
         });
 
         /**
@@ -316,7 +336,8 @@
           $indexedDB.openStore(STORE_NAME, function(pStore) {
             pStore.insert(vEvent).then(function() {
               getAllEvents.call(thisController, pStore);
-              $('#eventCreatorModal').modal('hide');
+              $('#eventCreatorModal').modal('hide'); // ~~~ Modalen dialog schließen
+              document.eventCreator.reset(); // ~~~ Formular leeren
             });
           });
         };
@@ -327,7 +348,7 @@
          */
         this.remove = function(pId) {
           $indexedDB.openStore(STORE_NAME, function(pStore) {
-            $('#event-carousel').carousel('prev');
+            $('#event-carousel').carousel(0);
             pStore.delete(pId).then(function () {
               getAllEvents.call(thisController, pStore);
             });
