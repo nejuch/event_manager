@@ -107,7 +107,7 @@ body > header > nav.navbar-default .navbar-nav > li.active > a:focus {
 
 body > main {
   margin-top: 80px;
-  height: calc(100% - 120px);
+  /*height: calc(100% - 120px);*/
 }
 
 body > main div.studio-equipment {
@@ -147,6 +147,10 @@ body > main div.studio-equipment dl dt:hover {
 
 body > main div.studio-equipment dl dt.selected:hover {
   color: #7f4d46;
+}
+
+body > footer {
+  height: 80px;
 }
 
 .jumbotron .panel {

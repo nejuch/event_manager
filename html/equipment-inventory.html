@@ -1,9 +1,9 @@
 <div class="container">
   <h2>Inventory</h2>
-  <div class="row show-grid" ng-repeat="equipment in inventory.equipments" style="margin-bottom: 1em;">
+  <div class="row" ng-repeat="equipment in equipmentService.equipments" style="margin-bottom: 1em;">
     <div class="col-xs-10">
       <div class="input-group input-group-lg">
-        <span class="input-group-addon {{inventory.types[equipment.equipment_typ].css}}" title="{{inventory.types[equipment.equipment_typ].name}}"></span>
+        <span class="input-group-addon {{equipmentService.types[equipment.equipment_typ].css}}" title="{{equipmentService.types[equipment.equipment_typ].name}}"></span>
         <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
       </div>
     </div>
@@ -22,7 +22,7 @@
           <optgroup>
             <option value="" data-style="glyphicon glyphicon-option-horizontal">Type</option>
           </optgroup>
-          <option ng-repeat="type in inventory.types" data-style="{{type.css}}">{{type.name}}</option>
+          <option ng-repeat="type in equipmentService.types" data-style="{{type.css}}">{{type.name}}</option>
         </select>
       </div>
     </div>

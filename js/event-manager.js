@@ -3,9 +3,12 @@
  *
  */
 (function() {
-  var STORE_EVENT    = "Event",
-      STORE_LOCATION = "Loation",
-      app = angular.module('eventManager', ['eventAdministration', 'indexedDB']);
+  var STORE_EVENT     = "Event",
+      STORE_EVENT_EQP = "Event_Equip",
+      STORE_LOCATION  = "Location",
+      STORE_EQUIPMENT = "Equipment",
+      STORE_TRACK     = "Track",
+      app = angular.module('eventManager', ['eventManagerEquipment', 'eventAdministration', 'indexedDB']);
 
   /**
    * IndexedDB-Configuration
@@ -16,12 +19,12 @@
     // ~~~ Create initial database version
     db.upgradeDatabase(1, function(pEvent, pDatabase, pTransaction) {
       pDatabase.createObjectStore(STORE_EVENT, {keyPath: 'event_id', autoIncrement: true});
-      pDatabase.createObjectStore('Event_Equip', {keyPath: ['event_id', 'equipment_id']});
-      pDatabase.createObjectStore('Equipment', {keyPath: 'equipment_id', autoIncrement: true});
+      pDatabase.createObjectStore(STORE_EVENT_EQP, {keyPath: ['event_id', 'equipment_id']});
+      pDatabase.createObjectStore(STORE_EQUIPMENT, {keyPath: 'equipment_id', autoIncrement: true});
       pDatabase.createObjectStore(STORE_LOCATION, {keyPath: 'location_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist', {keyPath: 'tracklist_id', autoIncrement: true});
       pDatabase.createObjectStore('Tracklist_Track', {keyPath: ['tracklist_id','track_id']});
-      pDatabase.createObjectStore('Track', {keyPath: 'track_id', autoIncrement: true});
+      pDatabase.createObjectStore(STORE_TRACK, {keyPath: 'track_id', autoIncrement: true});
     });
   });
 
@@ -42,16 +45,17 @@
   /**
    * Gemeinsam genutzter Dienst, der das aktuelle Event zur Verfügung stellt.
    */
-  app.service('currentEventProvider', ['$indexedDB', function($indexedDB) {
+  app.service('currentEventProvider', ['$indexedDB', 'equipmentService', function($indexedDB, equipmentService) {
     var thisFactory = this;
 
-    thisFactory.eventIdx = -1;
-    thisFactory.eventId  = 0;
-    thisFactory.event    = {};
-    thisFactory.events   = [];
+    thisFactory.eventIdx   = -1;
+    thisFactory.eventId    = 0;
+    thisFactory.event      = {};
+    thisFactory.events     = [];
+    thisFactory.equipments = [];
 
     /**
-     * Hilfsfunktion zum Laden des Ortes der Veranstaltung
+     * Hilfsfunktion zum Laden aller Veranstaltungen
      * @param {boolean} pPositionOnLast Soll auf den nach dem Laden letzten positioniert werden? (Nach addEvent)
      */
     function getAllEvents(pPositionOnLast) {
@@ -60,8 +64,29 @@
           thisFactory.events = pEvents;
           if ( pPositionOnLast ) {
             thisFactory.position( thisFactory.events.length-1 );
+          } else if ( thisFactory.eventId !== 0 ) {
+            thisFactory.position( thisFactory.eventIdx );
           }
         });
+      });
+    }
+
+    /**
+     * Hilfsfunktion zum Integrieren des eigentlichen Datensatzes der Ausrüstungsgegenstände der Veranstaltung
+     */
+    function getAllEquipments() {
+      if ( !Array.isArray(thisFactory.event.event_equip) ) {
+        return;
+      }
+
+      thisFactory.equipments = [];
+      $indexedDB.openStore(STORE_EQUIPMENT, function(pStore) {
+        var i;
+        for ( i=0; i<thisFactory.event.event_equip.length; i++) {
+          pStore.find(thisFactory.event.event_equip[i]).then(function(pEquipment) {
+            thisFactory.equipments.push(pEquipment);
+          });
+        }
       });
     }
 
@@ -80,6 +105,20 @@
     }
 
     /**
+     * Hilfsfunktion zum Ermitteln der Id eines Ausrüstungsgegenstands anhand des Namens
+     * @param {number} pName Primärkey
+     */
+    function getEquipmentId(pName) {
+      var i;
+      for (i=0; i<equipmentService.equipments.length; i++) {
+        if ( equipmentService.equipments[i].equipment_name === pName ) {
+          return(equipmentService.equipments[i].equipment_id);
+        }
+      }
+      return(null);
+    }
+
+    /**
      * Hilfsfunktion zum Verschieben des aktiven Events
      * @param {number} pEventId Primärkey
      */
@@ -90,6 +129,7 @@
       } else {
         thisFactory.event    = thisFactory.events[thisFactory.eventIdx];
         thisFactory.eventId  = thisFactory.event.event_id;
+        getAllEquipments();
       }
     }
 
@@ -102,6 +142,19 @@
       $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.insert(pEvent).then(function() {
           getAllEvents(true);
+        });
+      });
+    };
+
+    /**
+     * Eine Veranstaltung aktualisieren
+     * Nach erfolgreichem Entfernen wird das Array der Events nachgeladen.
+     * @param {number} pEvent Datensatz
+     */
+    this.setEvent = function(pEvent) {
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
+        pStore.upsert(pEvent).then(function() {
+          getAllEvents(false);
         });
       });
     };
@@ -121,15 +174,23 @@
     };
 
     /**
-     * Den Veranstaltungsort aktualisieren
-     * @param {object} pLocation Datensatz
+     * Einen Ausrüstungsgegenstand hinzufügen
+     * Nach erfolgreichem Hinzufügen werden Ausrüstungsgegenstände des Events neu geladen.
+     * @param {object} pEquipmentName Datensatz
      */
-    this.writeLocation = function(pLocation) {
-      $indexedDB.openStore(STORE_EVENT, function(pStore) {
-        pStore.upsert(thisFactory.event).then(function() {
-          getAllEvents(false);
-        });
-      });
+    this.addEquipment = function(pEquipmentName) {
+      if ( !Array.isArray(thisFactory.event.event_equip) ) {
+        thisFactory.event.event_equip = [];
+      }
+      thisFactory.event.event_equip.push( getEquipmentId(pEquipmentName) );
+      thisFactory.setEvent( thisFactory.event );
+    };
+
+    /**
+     * Die Events neu laden
+     */
+    this.reload = function() {
+      getAllEvents(false);
     };
 
     /**
@@ -247,22 +308,45 @@
 
         thisController.provider = currentEventProvider;
 
-        /**
-         * Den Veranstaltungsort setzen
-         */
-        thisController.setLocation = function() {
-          var vLocation = {
-            'street'     : document.eventLocation.locationStreet.value,
-            'zip'        : document.eventLocation.locationZIP.value,
-            'city'       : document.eventLocation.locationCity.value
-          };
-          thisController.provider.writeLocation(vLocation);
-        };
-
       },
       controllerAs: 'planner'
     };
   }]);
+
+  /**
+   * Eigenes Tag für das aktuell ausgewählte Event
+   */
+  app.directive('eventEquipment', function() {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-equipment.html',
+      /**
+       * Event-Planner Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($scope, currentEventProvider) {
+        var thisController = this;
+        $scope.provider    = currentEventProvider;
+
+        /**
+         * Einen Ausrüstungsgegenstand hinzufügen
+         */
+        thisController.add = function() {
+          currentEventProvider.addEquipment( document.eventEquipmentAdd.eqId.value );
+        };
+
+        /**
+         * Einen Ausrüstungsgegenstand entfernen
+         * @param {number} pId Primärschlüssel des Ausrüstungsgegenstands
+         */
+        thisController.remove = function(pId) {
+          currentEventProvider.removeEquipment(pId);
+        };
+      },
+      controllerAs: 'luggage'
+    };
+  });
 
   /**
    * Eigenes Tag zur Anzeige aller verfügbaren Events und zur Auswahl eines Events aus der Liste.
@@ -311,12 +395,46 @@
   }]);
 
   /**
-   * Eigenes Tag für den Veranstaltungsort des aktuell ausgewählten Events
+   * Eigenes Tag zum nachträglichen Bearbeiten eines Events
    */
-  app.directive('eventLocation', function() {
+  app.directive('eventDefiner', function() {
     return {
       restrict: 'E',
-      templateUrl: './html/event-location.html'
+      templateUrl: './html/event-definer.html',
+      /**
+       * Event-Definer Controller
+       * @author m11t
+       * @param {object} $scope               Scope
+       * @param {object} currentEventProvider Service handling events
+       */
+      controller: function($scope, currentEventProvider) {
+        $scope.provider = currentEventProvider;
+
+        /**
+         * Ändern eines Events
+         */
+        this.submit = function() {
+          var vEvent = {
+            'event_id'         : currentEventProvider.eventId,
+            'event_name'       : document.eventDefiner.eventName.value,
+            'timestamp'        : new Date(document.eventDefiner.eventDate.value + "T" + document.eventDefiner.eventHour.value + ":" + document.eventDefiner.eventMinute.value + ":00"),
+            'event_description': document.eventDefiner.eventDescription.value,
+            'street'           : document.eventDefiner.locationStreet.value,
+            'zip'              : document.eventDefiner.locationZIP.value,
+            'city'             : document.eventDefiner.locationCity.value
+          };
+          currentEventProvider.setEvent(vEvent);
+        };
+
+        /**
+         * Verwerfen der Änderungen eines Events
+         */
+        this.reset = function() {
+          currentEventProvider.reload();
+        };
+
+      },
+      controllerAs: 'definer'
     };
   });
 

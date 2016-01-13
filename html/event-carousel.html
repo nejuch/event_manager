@@ -35,7 +35,7 @@
         <h3>Todo:</h3>
         <div class="row">
           <div class="col-xs-4">
-            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success': carousel.provider.hasLocation(event.event_id), 'btn-warning': !carousel.provider.hasLocation(event.event_id)}">
+            <a href="#eventDefiner" class="btn btn-lg col-xs-12" ng-class="{'btn-success': carousel.provider.hasLocation(event.event_id), 'btn-warning': !carousel.provider.hasLocation(event.event_id)}">
               <h3>Location:</h3>
               <p ng-hide="carousel.provider.hasLocation(event.event_id)">
                 <br>
@@ -45,33 +45,33 @@
                 {{event.street}}<br>
                 {{event.zip + ", " + event.city}}
               </address>
-            </button>
+            </a>
           </div>
           <div class="col-xs-4">
-            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.tracks.length, 'btn-warning':!event.tracks.length}">
-              <h3>Tracklist:</h3>
-              <p ng-hide="!event.tracks.length">
-                <br>
-                None
-              </p>
-              <p ng-show="event.tracks.length">
-                {{event.tracks.length}}<br>
-                track<span ng-show="event.tracks.length > 1">s</span> listed
-              </p>
-            </button>
-          </div>
-          <div class="col-xs-4">
-            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.equipments.length, 'btn-warning':!event.equipments.length}">
+            <a href="#eventLuggage" class="btn btn-lg col-xs-12" ng-class="{'btn-success':angular.isArray(event.event_equip), 'btn-warning':!angular.isArray(event.event_equip)}">
               <h3>Equipment:</h3>
-              <p ng-hide="!event.equipments.length">
+              <p ng-hide="angular.isArray(event.event_equip)">
                 <br>
                 None
               </p>
-              <p ng-show="event.equipments.length">
-                {{event.equipments.length}}<br>
-                part<span ng-show="event.equipments.length > 1">s</span> packed
+              <p ng-show="angular.isArray(event.event_equip)">
+                {{event.event_equip.length}}<br>
+                part<span ng-show="event.event_equip.length > 1">s</span> packed
               </p>
-            </button>
+            </a>
+          </div>
+          <div class="col-xs-4">
+            <a href="#eventTracklist" class="btn btn-lg col-xs-12" ng-class="{'btn-success':angular.isArray(event.event_track), 'btn-warning':!angular.isArray(event.event_track)}">
+              <h3>Tracklist:</h3>
+              <p ng-hide="angular.isArray(event.event_track)">
+                <br>
+                None
+              </p>
+              <p ng-show="angular.isArray(event.event_track)">
+                {{event.event_track.length}}<br>
+                track<span ng-show="event.event_track.length > 1">s</span> listed
+              </p>
+            </a>
           </div>
         </div>
       </div>

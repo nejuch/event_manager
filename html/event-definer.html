@@ -1,0 +1,62 @@
+<form id="eventDefiner" name="eventDefiner" ng-submit="definer.submit()">
+  <h2>Define event</h2>
+
+  <fieldset>
+    <legend>Header data</legend>
+    <div class="row">
+      <div class="form-group col-xs-12">
+        <label for="eventName">Name</label>
+        <input type="text" class="form-control input-lg" id="eventName" name="eventName" placeholder="Name" required ng-model="provider.event.event_name" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-xs-6">
+        <label for="eventDate">Date</label>
+        <input type="text" class="form-control input-lg" id="eventDate" name="eventDate" placeholder="yyyy-MM-dd" pattern="[0-9]{4}.[0-9]{2}.[0-9]{2}" required value="{{provider.event.timestamp.getFullYear() + '-' + (provider.event.timestamp.getMonth()+1) + '-' + provider.event.timestamp.getDate()}}" />
+      </div>
+      <div class="form-group col-xs-3">
+        <label for="eventHour">Hour</label>
+        <input type="number" min="0" max="24" class="form-control input-lg" id="eventHour" name="eventHour" placeholder="HH" required value="{{provider.event.timestamp.getHours()}}"/>
+      </div>
+      <div class="form-group col-xs-3">
+        <label for="eventMinute">Minute</label>
+        <input type="number" min="0" max="59" class="form-control input-lg" id="eventMinute" name="eventMinute" placeholder="mm" required value="{{provider.event.timestamp.getMinutes()}}" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-xs-12">
+        <label for="eventDescription">Description</label>
+        <textarea class="form-control input-lg" id="eventDescription" name="eventDescription" placeholder="Description" style="resize:vertical" ng-model="provider.event.event_description"></textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Location</legend>
+    <div class="row">
+      <div class="form-group col-xs-12">
+        <label for="locationStreet">Street</label>
+        <input type="text" class="form-control input-lg" id="locationStreet" name="locationStreet" placeholder="Street" ng-model="provider.event.street" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-xs-4">
+        <label for="locationZIP">ZIP</label>
+        <input type="text" class="form-control input-lg" id="locationZIP" name="locationZIP" placeholder="ZIP" ng-model="provider.event.zip" />
+      </div>
+      <div class="form-group col-xs-8">
+        <label for="locationCity">City</label>
+        <input type="text" class="form-control input-lg" id="locationCity" name="locationCity" placeholder="City" ng-model="provider.event.city" />
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="row">
+    <div class="form-group col-xs-6">
+      <button type="button" class="btn btn-lg btn-danger col-xs-12" ng-click="definer.reset()">Cancel</button>
+    </div>
+    <div class="form-group col-xs-6">
+      <button type="submit" class="btn btn-lg btn-success col-xs-12">Apply</button>
+    </div>
+  </div>
+</form>
