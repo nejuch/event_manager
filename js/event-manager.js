@@ -5,7 +5,7 @@
 (function() {
   var STORE_EVENT    = "Event",
       STORE_LOCATION = "Loation",
-      app = angular.module('eventManager', ['indexedDB']);
+      app = angular.module('eventManager', ['eventAdministration', 'indexedDB']);
 
   /**
    * IndexedDB-Configuration
@@ -45,23 +45,21 @@
   app.service('currentEventProvider', ['$indexedDB', function($indexedDB) {
     var thisFactory = this;
 
-    thisFactory.eventIdx = 0;
+    thisFactory.eventIdx = -1;
     thisFactory.eventId  = 0;
     thisFactory.event    = {};
     thisFactory.events   = [];
 
     /**
      * Hilfsfunktion zum Laden des Ortes der Veranstaltung
-     * @param {number} pIdx Nummer des nach der Aktualisierung aktiven Events im Karussel
+     * @param {boolean} pPositionOnLast Soll auf den nach dem Laden letzten positioniert werden? (Nach addEvent)
      */
-    function getAllEvents(pIdx) {
+    function getAllEvents(pPositionOnLast) {
       $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.getAll().then(function(pEvents) {
           thisFactory.events = pEvents;
-          if ( typeof(pIdx) !== 'undefined' ) {
-            $rootScope.$evalAsync(function() {
-              $('#event-carousel .carousel-inner .item').eq(pIdx).toggleClass('active');
-            });
+          if ( pPositionOnLast ) {
+            thisFactory.position( thisFactory.events.length-1 );
           }
         });
       });
@@ -82,24 +80,18 @@
     }
 
     /**
-     * Das aktuelle Event aktualisieren damit der Planner und das Karussel darauf zugreifen können
-     * @param {number} pEventId Indexnummer des aktiven Events in der Datenbank
+     * Hilfsfunktion zum Verschieben des aktiven Events
+     * @param {number} pEventId Primärkey
      */
-    this.updateEvent = function(pEventId) {
-      thisFactory.eventId  = Number(pEventId);
-      if ( thisFactory.isCreator() ) {
-        thisFactory.eventIdx = 0;
+    function shift() {
+      if ( thisFactory.eventIdx === -1 ) {
+        thisFactory.eventId  = 0;
         thisFactory.event    = {};
-        thisFactory.location = {};
+      } else {
+        thisFactory.event    = thisFactory.events[thisFactory.eventIdx];
+        thisFactory.eventId  = thisFactory.event.event_id;
       }
-
-      $indexedDB.openStore(STORE_EVENT, function(pStore) {
-        pStore.find(thisFactory.eventId).then(function(pEvent) {
-          thisFactory.event    = pEvent;
-          thisFactory.eventIdx = getEventIdx(thisFactory.eventId);
-        });
-      });
-    };
+    }
 
     /**
      * Eine Veranstaltung hinzufügen
@@ -109,8 +101,7 @@
     this.addEvent = function(pEvent) {
       $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.insert(pEvent).then(function() {
-          $('#eventCreatorModal').modal('hide'); // ~~~ Modalen dialog schließen
-          getAllEvents(thisFactory.events.length);
+          getAllEvents(true);
         });
       });
     };
@@ -121,9 +112,10 @@
      * @param {number} pEventId Index
      */
     this.removeEvent = function(pEventId) {
-      $indexedDB.openStore(STORE_NAME, function(pStore) {
+      $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.delete(pEventId).then(function() {
-          getAllEvents();
+          getAllEvents(false);
+          thisFactory.recede(); // ~~~ Auf vorheriges Event positionieren
         });
       });
     };
@@ -135,152 +127,97 @@
     this.writeLocation = function(pLocation) {
       $indexedDB.openStore(STORE_EVENT, function(pStore) {
         pStore.upsert(thisFactory.event).then(function() {
-          getAllEvents(thisFactory.eventIdx);
+          getAllEvents(false);
         });
       });
     };
 
+    /**
+     * Ist das aktuelle Event der Platzhalter fürs Anlegen?
+     * @author M11
+     */
     this.isCreator = function() {
       return( thisFactory.eventId === 0 );
     };
 
+    /**
+     * Ist das übergebene Event das aktuell dargestellte?
+     * @author M11
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.isActive = function(pEventId) {
+      return( thisFactory.eventId === pEventId );
+    }
+
+    /**
+     * Ist das übergebene Event links vom aktuellen?
+     * @author M11
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.isLeft = function(pEventId) {
+      return( pEventId < thisFactory.eventId );
+    }
+
+    /**
+     * Ist das übergebene Event rechts vom aktuellen?
+     * @author M11
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.isRight = function(pEventId) {
+      return( pEventId > thisFactory.eventId );
+    }
+
+    /**
+     * Hat das angegebene Event einen Ort?
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.hasLocation = function(pEventId) {
+      var vIdx = getEventIdx(pEventId);
+      return( typeof(thisFactory.events[vIdx].street) !== 'undefined' || typeof(thisFactory.events[vIdx].city) !== 'undefined' );
+    }
+
+    /**
+     * Aktives Event neu positionieren
+     * @param {number} pIdx Index des neuen aktiven Events in der Datenbank
+     */
+    this.position = function(pIdx) {
+      thisFactory.eventIdx = pIdx;
+      shift();
+    }
+
+    /**
+     * Aktives Event neu positionieren anhand event_id
+     * @param {number} pId Event_id
+     */
+    this.positionById = function(pId) {
+      thisFactory.eventIdx = getEventIdx(pId);
+      shift();
+    }
+
+    /**
+     * Nächstes Event selektieren
+     */
+    this.proceed = function() {
+      if ( thisFactory.eventIdx === (thisFactory.events.length-1) ) {
+        thisFactory.position( -1 );
+      } else {
+        thisFactory.position( thisFactory.eventIdx+1 );
+      }
+    }
+
+    /**
+     * Vorheriges Event selektieren
+     */
+    this.recede = function() {
+      if ( thisFactory.eventIdx === -1 ) {
+        thisFactory.position( thisFactory.events.length-1 );
+      } else {
+        thisFactory.position( thisFactory.eventIdx-1 );
+      }
+    }
+
     // ~~~ Zum Start alle Events laden
-    getAllEvents();
-  }]);
-
-  /**
-   * Eigenes Tag für das Instrumenteninventar in den Stammdaten
-   */
-  app.directive('equipmentInventory', ['$http', '$indexedDB', function($http, $indexedDB) {
-    return {
-      restrict: 'E',
-      templateUrl: './html/equipment-inventory.html',
-      /**
-       * Controller for the equipment inventory
-       * @author m11t
-       * @param {object} $indexedDB IndexedDB service
-       */
-      controller: function($indexedDB) {
-        var thisController = this,
-            STORE_NAME     = "Equipment";
-
-        this.types      = [];
-        this.equipments = [];
-
-        /**
-         * Hilfsfunktion zum Laden aller Lieder, da es mehrfach benötigt wird
-         * @param {object} pStore Verbindung zu einem ObjectStore
-         */
-        var getAllEquipments = function(pStore) {
-          pStore.getAll().then(function(pEquipments) {
-            thisController.equipments = pEquipments;
-          });
-        };
-
-        /**
-         * Hinzufügen eines Instruments
-         * Nach erfolgreichem Hinzufügen wird das Inventar aktualisiert
-         */
-        this.add = function() {
-          var eq = {
-            'equipment_typ' : document.equipmentInventoryAdd.elements[0].selectedIndex - 1,
-            'equipment_name': document.equipmentInventoryAdd.elements[1].value
-          };
-
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(eq).then(function() {
-              getAllEquipments.call(thisController, pStore)
-            });
-          });
-        };
-
-        /**
-         * Entfernen eines Instruments
-         * Nach erfolgreichem Entfernen wird das Inventar aktualisiert
-         */
-        this.remove = function(pId) {
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(function() {
-              getAllEquipments.call(thisController, pStore)
-            });
-          });
-        };
-
-        // ~~~ Zum Seitenstart das Inventar laden
-        $indexedDB.openStore(STORE_NAME, getAllEquipments);
-
-        // ~~~ Zum Seitenstart die möglichen Instrumente laden
-        $http.get("./json/equipment-types.json").success(function(pTypes) {
-          thisController.types = pTypes;
-        });
-      },
-      controllerAs: 'inventory'
-    };
-  }]);
-
-  /**
-   * Eigenes Tag für die Lieder in den Stammdaten
-   */
-  app.directive('trackJukebox', ['$http', '$indexedDB', function($http, $indexedDB) {
-    return {
-      restrict: 'E',
-      templateUrl: './html/track-jukebox.html',
-      /**
-       * Controller for the equipment inventory
-       * @author m11t
-       * @param {object} $indexedDB IndexedDB service
-       */
-      controller: function($indexedDB) {
-        var thisController = this,
-            STORE_NAME     = "Track";
-
-        this.tracks = [];
-
-        /**
-         * Hilfsfunktion zum Laden aller Lieder, da es mehrfach benötigt wird
-         * @param {object} pStore Verbindung zu einem ObjectStore
-         */
-        var getAllTracks = function(pStore) {
-          pStore.getAll().then(function(pTracks) {
-            thisController.tracks = pTracks;
-          });
-        };
-
-        /**
-         * Hinzufügen eines Lieds
-         * Nach erfolgreichem Hinzufügen wird das Array der Lieder aktualisiert
-         */
-        this.add = function() {
-          var track = {
-            'track_title': document.jukeboxAdd.elements[0].value,
-            'duration'   : document.jukeboxAdd.elements[1].value,
-            'artist'     : document.jukeboxAdd.elements[2].value
-          };
-
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.insert(track).then(function() {
-              getAllTracks.call(thisController, pStore)
-            });
-          });
-        };
-
-        /**
-         * Entfernen eines Lieds
-         * Nach erfolgreichem Entfernen wird das Array der Lieder aktualisiert
-         */
-        this.remove = function(pId) {
-          $indexedDB.openStore(STORE_NAME, function(pStore) {
-            pStore.delete(pId).then(function() {
-              getAllTracks.call(thisController, pStore)
-            });
-          });
-        };
-
-        // ~~~ Zum Seitenstart die Lieder laden
-        $indexedDB.openStore(STORE_NAME, getAllTracks);
-      },
-      controllerAs: 'jukebox'
-    };
+    getAllEvents(false);
   }]);
 
   /**
@@ -306,11 +243,7 @@
        * @param {object} $indexedDB IndexedDB service
        */
       controller: function($indexedDB, currentEventProvider) {
-        var thisController  = this,
-            STORE_EVENT     = "Event",
-            STORE_TRACKLIST = "Tracklist",
-            STORE_LOCATION  = "Location",
-            STORE_EQUIPMENT = "Event_Equip";
+        var thisController  = this;
 
         thisController.provider = currentEventProvider;
 
@@ -344,18 +277,9 @@
        * @param {object} $indexedDB IndexedDB service
        */
       controller: function($indexedDB, currentEventProvider) {
-        var thisController  = this,
-            STORE_NAME      = "Event";
+        var thisController  = this;
 
         thisController.provider = currentEventProvider;
-
-        /**
-         * Event-Handler um auf das Karussel reagieren und den aktuellen Index merken
-         * @param {object} pEvent slid.bs.carousel-Event
-         */
-        $('#event-carousel').on('slid.bs.carousel', function (pEvt) {
-          thisController.provider.updateEvent(pEvt.relatedTarget.getAttribute("data-event-id"));
-        });
 
         /**
          * Hinzufügen eines Events
@@ -364,7 +288,10 @@
           var vEvent = {
             'event_name'       : document.eventCreator.eventName.value,
             'timestamp'        : new Date(document.eventCreator.eventDate.value + "T" + document.eventCreator.eventHour.value + ":" + document.eventCreator.eventMinute.value + ":00"),
-            'event_description': document.eventCreator.eventDescription.value
+            'event_description': document.eventCreator.eventDescription.value,
+            'street'           : document.eventCreator.locationStreet.value,
+            'zip'              : document.eventCreator.locationZIP.value,
+            'city'             : document.eventCreator.locationCity.value
           };
           thisController.provider.addEvent(vEvent);
           document.eventCreator.reset(); // ~~~ Formular leeren
@@ -376,7 +303,6 @@
          * @param {number} pId Index
          */
         this.remove = function(pId) {
-          $('#event-carousel').carousel(0);
           thisController.provider.removeEvent(pId);
         };
       },

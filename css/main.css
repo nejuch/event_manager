@@ -21,6 +21,7 @@ body > header {
   width: 100%;
   position: fixed;
   top: 0;
+  z-index: 9999;
 }
 
 body > header > nav.navbar {
@@ -43,13 +44,16 @@ body > header > nav.navbar > .container-fluid {
 
 body > header > nav.navbar > .container-fluid > .navbar-header > h1 {
   display: inline-block;
-  width: 10%;
+  width: 175px;
 }
-body > header > nav.navbar > .container-fluid > .navbar-header > h1 > a.navbar-brand {
+body > header > nav.navbar > .container-fluid > .navbar-header > h1 a.navbar-brand {
   font-family: "Lobster", cursive;
   font-size: 1.2em;
   padding: 0.33em 0;
   margin-left: 0;
+}
+body > header > nav.navbar .navbar-collapse {
+  padding-left: 175px;
 }
 
 body > header > nav.navbar.navbar-default .navbar-toggle {
@@ -150,8 +154,27 @@ body > main div.studio-equipment dl dt.selected:hover {
   margin: 0 auto;
 }
 
-.carousel,
-.carousel .item {
+.carousel-inner {
   background-color: #aaa;
   height: 500px;
+}
+
+.carousel-inner .event {
+  background-color: #aaa;
+  height: 500px;
+  width: 100%;
+  position: absolute;
+  transition: 500ms cubic-bezier(0.645, 0.045, 0.355, 1.000) left;
+}
+
+.carousel-inner .event.lft {
+  left: -100%;
+}
+
+.carousel-inner .event.rgt {
+  left: 100%;
+}
+
+.carousel-inner .event.current {
+  left: 0;
 }

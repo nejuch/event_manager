@@ -18,8 +18,6 @@
   "homepage": "https://github.com/nejuch/event_manager#readme",
   "dependencies": {
     "angular": "^1.4.8",
-    "angular-carousel": "^1.0.1",
-    "angular-touch": "^1.4.8",
     "bootstrap": "^3.3.6",
     "jquery": "^2.1.4"
   }

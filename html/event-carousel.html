@@ -1,95 +1,91 @@
 <div id="event-carousel" class="carousel slide" data-interval="false">
-  <!-- Indicators -->
   <ol class="carousel-indicators">
-    <li data-target="#event-carousel" class="active" data-slide-to="0"></li>
-    <li data-target="#event-carousel" ng-repeat="event in carousel.provider.events" data-slide-to="{{event.event_id}}"></li>
+    <li ng-class="{active: carousel.provider.isCreator()}" ng-click="carousel.provider.position(-1)"></li>
+    <li ng-repeat="event in carousel.provider.events track by $index" ng-class="{active: carousel.provider.isActive({{event.event_id}})}" ng-click="carousel.provider.positionById(event.event_id)"></li>
   </ol>
 
-  <!-- Wrapper for slides -->
-  <div class="carousel-inner" role="listbox">
-    <div class="item active" data-event-id="0">
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Create new event</h1>
-          <p>
-            Get started managing your event bookings with myStudio.<br>
-            Just push the button!
-          </p>
-          <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#eventCreatorModal">Create new Event</button>
-        </div>
+  <div class="carousel-inner">
+    <div class="event lft" ng-class="{current: carousel.provider.isCreator()}">
+      <div class="carousel-caption">
+        <h1>Create new event</h1>
+        <p>
+          Get started managing your event bookings with myStudio.<br>
+          Just push the button!
+        </p>
+        <a type="button" class="btn btn-primary btn-lg btn-block" href="#eventCreator">Create new Event</a>
       </div>
     </div>
-    <div class="item" ng-repeat="event in carousel.provider.events" data-event-id="{{event.event_id}}">
-      <div class="container">
-        <div class="carousel-caption">
 
-          <h1 class="clearfix">
-            <button type="button" class="close pull-left" aria-label="Close" ng-click="carousel.remove(event.event_id)"><span aria-hidden="true">&times; Remove</span></button>
-            <small class="pull-right">{{event.timestamp.toLocaleString()}}</small>
-          </h1>
-          <h1>
-            {{event.event_name}}
-          </h1>
-          <p>
-            {{event.event_description}}
-          </p>
+    <div class="event"
+         ng-class="{current: carousel.provider.isActive({{event.event_id}}), lft: carousel.provider.isLeft({{event.event_id}}), rgt: carousel.provider.isRight({{event.event_id}})}"
+         ng-repeat="event in carousel.provider.events track by $index">
+      <div class="carousel-caption">
 
-          <h3>Todo:</h3>
-          <div class="row">
-            <div class="col-xs-4">
-              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.tracks.length, 'btn-warning':!event.tracks.length}">
-                <h3>Tracklist:</h3>
-                <p ng-hide="!event.tracks.length">
-                  <br>
-                  None
-                </p>
-                <p ng-show="event.tracks.length">
-                  {{event.tracks.length}}<br>
-                  track<span ng-show="event.tracks.length > 1">s</span> listed
-                </p>
-              </button>
-            </div>
-            <div class="col-xs-4">
-              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.equipments.length, 'btn-warning':!event.equipments.length}">
-                <h3>Equipment:</h3>
-                <p ng-hide="!event.equipments.length">
-                  <br>
-                  None
-                </p>
-                <p ng-show="event.equipments.length">
-                  {{event.equipments.length}}<br>
-                  part<span ng-show="event.equipments.length > 1">s</span> packed
-                </p>
-              </button>
-            </div>
-            <div class="col-xs-4">
-              <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.location, 'btn-warning':!event.location}">
-                <h3>Location:</h3>
-                <p ng-hide="event.street !== '' || event.zip !== '' || event.city !== ''">
-                  <br>
-                  None
-                </p>
-                <address ng-show="event.street !== '' || event.zip !== '' || event.city !== ''">
-                  {{event.street}}<br>
-                  {{event.zip + ", " + event.city}}
-                </address>
-              </button>
-            </div>
+        <h1 class="clearfix">
+          <button type="button" class="close pull-left" aria-label="Close" ng-click="carousel.remove(event.event_id)"><span aria-hidden="true">&times; Remove</span></button>
+          <small class="pull-right">{{event.timestamp.toLocaleString()}}</small>
+        </h1>
+        <h1>
+          {{event.event_name}}
+        </h1>
+        <p>
+          {{event.event_description}}
+        </p>
+
+        <h3>Todo:</h3>
+        <div class="row">
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success': carousel.provider.hasLocation(event.event_id), 'btn-warning': !carousel.provider.hasLocation(event.event_id)}">
+              <h3>Location:</h3>
+              <p ng-hide="carousel.provider.hasLocation(event.event_id)">
+                <br>
+                None
+              </p>
+              <address ng-show="carousel.provider.hasLocation(event.event_id)">
+                {{event.street}}<br>
+                {{event.zip + ", " + event.city}}
+              </address>
+            </button>
+          </div>
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.tracks.length, 'btn-warning':!event.tracks.length}">
+              <h3>Tracklist:</h3>
+              <p ng-hide="!event.tracks.length">
+                <br>
+                None
+              </p>
+              <p ng-show="event.tracks.length">
+                {{event.tracks.length}}<br>
+                track<span ng-show="event.tracks.length > 1">s</span> listed
+              </p>
+            </button>
+          </div>
+          <div class="col-xs-4">
+            <button type="button" class="btn btn-lg col-xs-12" ng-class="{'btn-success':event.equipments.length, 'btn-warning':!event.equipments.length}">
+              <h3>Equipment:</h3>
+              <p ng-hide="!event.equipments.length">
+                <br>
+                None
+              </p>
+              <p ng-show="event.equipments.length">
+                {{event.equipments.length}}<br>
+                part<span ng-show="event.equipments.length > 1">s</span> packed
+              </p>
+            </button>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Controls -->
-  <a class="left carousel-control" href="#event-carousel" role="button" data-slide="prev">
+  <a class="left carousel-control" href ng-click="carousel.provider.recede();" role="button">
     <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
   </a>
-  <a class="right carousel-control" href="#event-carousel" role="button" data-slide="next">
+  <a class="right carousel-control" href ng-click="carousel.provider.proceed();" role="button">
     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
 
-  <event-creator></event-creator>
 </div>

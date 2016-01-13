@@ -7,7 +7,6 @@
   <meta name="keywords" content="" />
 
   <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
-  <link type="text/css" rel="stylesheet" href="css/angular-carousel.min.css">
   <link type="text/css" rel="stylesheet" href="css/flaticon.css">
   <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand:400,700,300">
   <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
@@ -17,6 +16,7 @@
   <script type="text/javascript" src="js/angular-indexed-db.min.js"></script>
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/event-admin.js"></script>
   <script type="text/javascript" src="js/event-manager.js"></script>
 </head>
 <body ng-controller="TabControl as tab">
@@ -33,19 +33,17 @@
         </div>
 
         <div id="myStudio-NavBar" class="navbar-collapse collapse">
-          <div class="container">
-            <ul class="nav navbar-nav">
-              <li ng-class="{ active:tab.isSet(1) }">
-                <a href ng-click="tab.setTab(1)">Administrate</a>
-              </li>
-              <li ng-class="{ active:tab.isSet(2) }">
-                <a href ng-click="tab.setTab(2)">Plan</a>
-              </li>
-              <li ng-class="{ active:tab.isSet(3) }">
-                <a href ng-click="tab.setTab(3)">Perform</a>
-              </li>
-            </ul>
-          </div>
+          <ul class="nav navbar-nav">
+            <li ng-class="{ active:tab.isSet(1) }">
+              <a href ng-click="tab.setTab(1)">Administrate</a>
+            </li>
+            <li ng-class="{ active:tab.isSet(2) }">
+              <a href ng-click="tab.setTab(2)">Plan</a>
+            </li>
+            <li ng-class="{ active:tab.isSet(3) }">
+              <a href ng-click="tab.setTab(3)">Perform</a>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
