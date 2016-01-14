@@ -8,7 +8,7 @@
       STORE_LOCATION  = "Location",
       STORE_EQUIPMENT = "Equipment",
       STORE_TRACK     = "Track",
-      app = angular.module('eventManager', ['eventManagerEquipment', 'eventAdministration', 'indexedDB']);
+      app = angular.module('eventManager', ['eventManagerEquipment', 'eventManagerTracklist', 'indexedDB']);
 
   /**
    * IndexedDB-Configuration
@@ -45,7 +45,7 @@
   /**
    * Gemeinsam genutzter Dienst, der das aktuelle Event zur Verfügung stellt.
    */
-  app.service('currentEventProvider', ['$indexedDB', 'equipmentService', function($indexedDB, equipmentService) {
+  app.service('currentEventProvider', ['$indexedDB', 'equipmentService', 'tracklistService', function($indexedDB, equipmentService, tracklistService) {
     var thisFactory = this;
 
     thisFactory.eventIdx   = -1;
@@ -53,6 +53,7 @@
     thisFactory.event      = {};
     thisFactory.events     = [];
     thisFactory.equipments = [];
+    thisFactory.tracks     = [];
 
     /**
      * Hilfsfunktion zum Laden aller Veranstaltungen
@@ -91,6 +92,25 @@
     }
 
     /**
+     * Hilfsfunktion zum Integrieren des eigentlichen Datensatzes der Lieder der Veranstaltung
+     */
+    function getAllTracks() {
+      if ( !Array.isArray(thisFactory.event.event_track) ) {
+        return;
+      }
+
+      thisFactory.tracks = [];
+      $indexedDB.openStore(STORE_TRACK, function(pStore) {
+        var i;
+        for ( i=0; i<thisFactory.event.event_track.length; i++) {
+          pStore.find(thisFactory.event.event_track[i]).then(function(pTrack) {
+            thisFactory.tracks.push(pTrack);
+          });
+        }
+      });
+    }
+
+    /**
      * Hilfsfunktion zum Ermitteln des Indexes eines Events innerhalb der Events von der Datenbank
      * @param {number} pEventId Primärkey
      */
@@ -105,25 +125,19 @@
     }
 
     /**
-     * Hilfsfunktion zum Ermitteln der Id eines Ausrüstungsgegenstands anhand des Namens
-     * @param {number} pName Bezeichnung
+     * Hilfsfunktion zum Ermitteln des Indexes eines Ausrüstungsgegenstands in der Tabelle
+     * @param {number} pId Primärkey
      */
-    function getEquipmentId(pName) {
-      var i;
-      for (i=0; i<equipmentService.equipments.length; i++) {
-        if ( equipmentService.equipments[i].equipment_name === pName ) {
-          return(equipmentService.equipments[i].equipment_id);
-        }
-      }
-      return(null);
+    function getEquipmentIdx(pId) {
+      return( thisFactory.event.event_equip.indexOf(pId) );
     }
 
     /**
      * Hilfsfunktion zum Ermitteln des Indexes eines Ausrüstungsgegenstands in der Tabelle
      * @param {number} pId Primärkey
      */
-    function getEquipmentIdx(pId) {
-      return( thisFactory.event.event_equip.indexOf(pId) );
+    function getTrackIdx(pId) {
+      return( thisFactory.event.event_track.indexOf(pId) );
     }
 
     /**
@@ -138,6 +152,7 @@
         thisFactory.event    = thisFactory.events[thisFactory.eventIdx];
         thisFactory.eventId  = thisFactory.event.event_id;
         getAllEquipments();
+        getAllTracks();
       }
     }
 
@@ -184,13 +199,13 @@
     /**
      * Einen Ausrüstungsgegenstand hinzufügen
      * Nach erfolgreichem Hinzufügen werden Ausrüstungsgegenstände des Events neu geladen.
-     * @param {object} pEquipmentName Datensatz
+     * @param {object} pId Primärschlüssel des Ausrüstungsgegenstands
      */
-    this.addEquipment = function(pEquipmentName) {
+    this.addEquipment = function(pId) {
       if ( !Array.isArray(thisFactory.event.event_equip) ) {
         thisFactory.event.event_equip = [];
       }
-      thisFactory.event.event_equip.push( getEquipmentId(pEquipmentName) );
+      thisFactory.event.event_equip.push( pId );
       thisFactory.setEvent( thisFactory.event );
     };
 
@@ -201,6 +216,29 @@
      */
     this.removeEquipment = function(pId) {
       thisFactory.event.event_equip.splice(getEquipmentIdx(pId), 1);
+      thisFactory.setEvent( thisFactory.event );
+    }
+
+    /**
+     * Ein Lied hinzufügen
+     * Nach erfolgreichem Hinzufügen werden die Lieder des Events neu geladen.
+     * @param {object} pId Primärschlüssel des Lieds
+     */
+    this.addTrack = function(pId) {
+      if ( !Array.isArray(thisFactory.event.event_track) ) {
+        thisFactory.event.event_track = [];
+      }
+      thisFactory.event.event_track.push( pId );
+      thisFactory.setEvent( thisFactory.event );
+    };
+
+    /**
+     * Ein Lied entfernen
+     * @author m11t
+     * @param {number} pId Primärschlüssel
+     */
+    this.removeTrack = function(pId) {
+      thisFactory.event.event_track.splice(getTrackIdx(pId), 1);
       thisFactory.setEvent( thisFactory.event );
     }
 
@@ -350,7 +388,7 @@
   }]);
 
   /**
-   * Eigenes Tag für das aktuell ausgewählte Event
+   * Eigenes Tag für die Ausrüstungsgegenstände des ausgewählten Events
    */
   app.directive('eventEquipment', function() {
     return {
@@ -369,7 +407,7 @@
          * Einen Ausrüstungsgegenstand hinzufügen
          */
         thisController.add = function() {
-          currentEventProvider.addEquipment( document.eventEquipmentAdd.eqId.value );
+          currentEventProvider.addEquipment( document.eventEquipmentAdd.eqId.selectedOptions[0].value );
         };
 
         /**
@@ -381,6 +419,41 @@
         };
       },
       controllerAs: 'luggage'
+    };
+  });
+
+  /**
+   * Eigenes Tag für die Lieder des ausgewählten Events
+   */
+  app.directive('eventTracklist', function() {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-tracklist.html',
+      /**
+       * Event-Planner Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($scope, currentEventProvider) {
+        var thisController = this;
+        $scope.provider    = currentEventProvider;
+
+        /**
+         * Ein Lied hinzufügen
+         */
+        thisController.add = function() {
+          currentEventProvider.addTrack( document.eventTrackAdd.trId.selectedOptions[0].value );
+        };
+
+        /**
+         * Ein Lied entfernen
+         * @param {number} pId Primärschlüssel des Liedes
+         */
+        thisController.remove = function(pId) {
+          currentEventProvider.removeTrack(pId);
+        };
+      },
+      controllerAs: 'tracklist'
     };
   });
 

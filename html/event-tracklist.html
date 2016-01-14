@@ -1,0 +1,33 @@
+<div id="eventTracklist">
+  <h2>Build your tracklist</h2>
+  <div class="media" ng-repeat="track in provider.tracks">
+    <div class="media-body">
+      <div class="row">
+        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
+        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
+      </div>
+      {{track.artist}}
+    </div>
+    <div class="media-right">
+      <button type="button" class="btn btn-lg btn-danger media-object" ng-click="tracklist.remove(track.track_id);">
+        <span class="glyphicon glyphicon-trash"></span>
+      </button>
+    </div>
+  </div>
+
+  <form name="eventTrackAdd" class="row" ng-submit="tracklist.add()">
+    <div class="form-group col-xs-10">
+      <label class="sr-only" for="trId">Track</label>
+      <select class="form-control input-lg" id="trId" name="trId" required>
+        <optgroup>
+          <option value="">Track</option>
+        </optgroup>
+        <track-options></track-options>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-lg btn-success col-xs-2">
+      <span class="glyphicon glyphicon-plus"></span>
+      <span class="hidden-xs">Add</span>
+    </button>
+  </form>
+</div>

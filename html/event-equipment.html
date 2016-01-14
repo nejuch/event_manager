@@ -16,8 +16,12 @@
   <form name="eventEquipmentAdd" class="row" ng-submit="luggage.add()">
     <div class="form-group col-xs-10">
       <label class="sr-only" for="eqId">Equipment</label>
-      <input type="text" class="form-control input-lg" id="eqId" name="eqId" placeholder="Equipment" list="equipmentOptions" required />
-      <equipment-options></equipment-options>
+      <select class="form-control input-lg" id="eqId" name="eqId" required>
+        <optgroup>
+          <option value="">Equipment</option>
+        </optgroup>
+        <equipment-options></equipment-options>
+      </select>
     </div>
     <button type="submit" class="btn btn-lg btn-success col-xs-2">
       <span class="glyphicon glyphicon-plus"></span>
