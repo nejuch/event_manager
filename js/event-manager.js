@@ -106,7 +106,7 @@
 
     /**
      * Hilfsfunktion zum Ermitteln der Id eines Ausrüstungsgegenstands anhand des Namens
-     * @param {number} pName Primärkey
+     * @param {number} pName Bezeichnung
      */
     function getEquipmentId(pName) {
       var i;
@@ -116,6 +116,14 @@
         }
       }
       return(null);
+    }
+
+    /**
+     * Hilfsfunktion zum Ermitteln des Indexes eines Ausrüstungsgegenstands in der Tabelle
+     * @param {number} pId Primärkey
+     */
+    function getEquipmentIdx(pId) {
+      return( thisFactory.event.event_equip.indexOf(pId) );
     }
 
     /**
@@ -187,6 +195,16 @@
     };
 
     /**
+     * Einen Ausrüstungsgegenstand entfernen
+     * @author m11t
+     * @param {number} pId Primärschlüssel
+     */
+    this.removeEquipment = function(pId) {
+      thisFactory.event.event_equip.splice(getEquipmentIdx(pId), 1);
+      thisFactory.setEvent( thisFactory.event );
+    }
+
+    /**
      * Die Events neu laden
      */
     this.reload = function() {
@@ -235,6 +253,24 @@
     this.hasLocation = function(pEventId) {
       var vIdx = getEventIdx(pEventId);
       return( typeof(thisFactory.events[vIdx].street) !== 'undefined' || typeof(thisFactory.events[vIdx].city) !== 'undefined' );
+    }
+
+    /**
+     * Hat das angegebene Event einen Ort?
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.hasEquipment = function(pEventId) {
+      var vIdx = getEventIdx(pEventId);
+      return( Array.isArray(thisFactory.events[vIdx].event_equip) );
+    }
+
+    /**
+     * Hat das angegebene Event einen Ort?
+     * @param {number} pEventId Primärschlüssel
+     */
+    this.hasTracklist = function(pEventId) {
+      var vIdx = getEventIdx(pEventId);
+      return( Array.isArray(thisFactory.events[vIdx].event_track) );
     }
 
     /**

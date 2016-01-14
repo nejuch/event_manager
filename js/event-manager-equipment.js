@@ -37,11 +37,11 @@
     /**
      * Hinzufügen eines Instruments
      * Nach erfolgreichem Hinzufügen wird das Inventar aktualisiert
-     * @param {object} pEquipmen Datensatz
+     * @param {object} pEquipment Datensatz
      */
     thisService.add = function(pEquipment) {
       $indexedDB.openStore(STORE_EQUIPMENT, function(pStore) {
-        pStore.insert(eq).then(getAllEquipments);
+        pStore.insert(pEquipment).then(getAllEquipments);
       });
     };
 
