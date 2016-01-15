@@ -37,12 +37,22 @@
   <div class="track-player">
     <div class="container" ng-repeat="track in provider.tracks" ng-show="{{provider.track === $index}}">
 
-      <p class="lead text-center">
-        {{provider.tracks[provider.track].track_title}} by {{provider.tracks[provider.track].artist}}
-      </p>
-      <div class="progress">
-        <div class="progress-bar" role="progressbar" style="width: {{provider.getProgressedPercentage()}};">
-          {{provider.getProgressedTime()}} / {{provider.tracks[provider.track].duration}}
+      <div class="row">
+        <div class="col-xs-1">
+          <h1><a href class="btn btn-lg btn-primary" ng-click="performer.start();"><span class="glyphicon glyphicon-play"></span></a></h1>
+        </div>
+        <div class="col-xs-10">
+          <p class="lead text-center">
+            {{provider.tracks[provider.track].track_title}} by {{provider.tracks[provider.track].artist}}
+          </p>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{provider.getProgressedPercentage()}};">
+              {{provider.getProgressedTime()}} / {{provider.tracks[provider.track].duration}}
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-1">
+          <h1><a href class="btn btn-lg btn-danger" ng-click="performer.stop();"><span class="glyphicon glyphicon-stop"></span></a></h1>
         </div>
       </div>
 
