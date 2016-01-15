@@ -3,13 +3,15 @@
 
   <table class="table table-striped">
     <colgroup>
+      <col class="col-xs-1">
       <col class="col-xs-5">
-      <col class="col-xs-5">
+      <col class="col-xs-4">
       <col class="col-xs-1 text-right">
       <col class="col-xs-1">
     </colgroup>
     <thead>
       <tr>
+        <th></th>
         <th>Title</th>
         <th>Artist</th>
         <th class="text-right">Time</th>
@@ -42,8 +44,9 @@
         </th>
       </tr>
     </thead>
-    <tbody>
-      <tr ng-repeat="track in provider.tracks">
+    <tbody sv-root sv-part="provider.tracks" sv-on-sort="tracklist.reorder($indexFrom, $indexTo)">
+      <tr ng-repeat="track in provider.tracks" sv-element>
+        <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
         <td>{{track.track_title}}</td>
         <td>{{track.artist}}</td>
         <td>{{track.duration}}</td>
@@ -53,6 +56,10 @@
             <span class="hidden-xs">Remove</span>
           </button>
         </td>
+      </tr>
+      <tr sv-placeholder>
+        <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
+        <td colspan="4">Move here</td>
       </tr>
     </tbody>
   </table>

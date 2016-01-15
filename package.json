@@ -18,6 +18,7 @@
   "homepage": "https://github.com/nejuch/event_manager#readme",
   "dependencies": {
     "angular": "^1.4.8",
+    "angular-sortable-view": "0.0.14",
     "bootstrap": "^3.3.6",
     "jquery": "^2.1.4"
   }

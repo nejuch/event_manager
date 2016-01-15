@@ -8,7 +8,7 @@
       STORE_LOCATION  = "Location",
       STORE_EQUIPMENT = "Equipment",
       STORE_TRACK     = "Track",
-      app = angular.module('eventManager', ['eventManagerEquipment', 'eventManagerTracklist', 'indexedDB']);
+      app = angular.module('eventManager', ['eventManagerEquipment', 'eventManagerTracklist', 'indexedDB', 'angular-sortable-view']);
 
   /**
    * IndexedDB-Configuration
@@ -246,6 +246,17 @@
     }
 
     /**
+     * Ein Lied verschieben
+     * @author m11t
+     * @param {number} pFrom Start-Index
+     * @param {number} pTo   Ziel-Index
+     */
+    this.reorderTrack = function(pFrom, pTo) {
+      thisFactory.event.event_track.splice(pTo, 0, thisFactory.event.event_track.splice(pFrom, 1)[0]);
+      thisFactory.setEvent( thisFactory.event );
+    }
+
+    /**
      * Die Events neu laden
      */
     this.reload = function() {
@@ -458,6 +469,15 @@
          */
         thisController.remove = function(pId) {
           currentEventProvider.removeTrack(pId);
+        };
+
+        /**
+         * Ein Lied verschieben
+         * @param {number} pFrom Start-Index des Liedes
+         * @param {number} pTo   Ziel-Index des Liedes
+         */
+        thisController.reorder = function(pFrom, pTo) {
+          currentEventProvider.reorderTrack(pFrom, pTo);
         };
       },
       controllerAs: 'tracklist'
