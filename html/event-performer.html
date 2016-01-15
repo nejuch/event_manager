@@ -1,0 +1,50 @@
+<div class="container-fluid">
+
+  <div class="container" id="eventPerformance">
+    <h1><a href ng-click="">Perform</a></h2>
+
+    <table class="table table-striped">
+      <colgroup>
+        <col class="col-xs-1">
+        <col class="col-xs-5">
+        <col class="col-xs-5">
+        <col class="col-xs-1">
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Title</th>
+          <th>Artist</th>
+          <th class="text-right">Time</th>
+        </tr>
+      </thead>
+      <tbody sv-root sv-part="provider.tracks" sv-on-sort="performer.reorder($indexFrom, $indexTo)">
+        <tr ng-repeat="track in provider.tracks" sv-element>
+          <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
+          <td>{{track.track_title}}</td>
+          <td>{{track.artist}}</td>
+          <td class="text-right">{{track.duration}}</td>
+        </tr>
+        <tr sv-placeholder>
+          <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
+          <td colspan="3">Move here</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="track-player">
+    <div class="container">
+
+      <p class="text-center">
+        {{performer.track}}
+        {{provider.tracks[performer.track].track_title}} by {{provider.tracks[performer.track].artist}}
+      </p>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 60%;"> / {{provider.tracks[performer.track].duration}}</div>
+      </div>
+
+    </div>
+  </div>
+</div>

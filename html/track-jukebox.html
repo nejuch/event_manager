@@ -7,7 +7,7 @@
       <colgroup>
         <col class="col-xs-5">
         <col class="col-xs-5">
-        <col class="col-xs-1 text-right">
+        <col class="col-xs-1">
         <col class="col-xs-1">
       </colgroup>
       <thead>
@@ -20,11 +20,11 @@
             <label class="sr-only" for="trackArtist">Artist</label>
             <input type="text" class="form-control" id="trackArtist" name="trackArtist" placeholder="Artist" required />
           </th>
-          <th>
+          <th class="text-right">
             <label class="sr-only" for="trackTime">Time</label>
             <input type="time" class="form-control" id="trackTime" name="trackTime" placeholder="Time" required />
           </th>
-          <th class="text-right">
+          <th>
             <button type="submit" class="btn btn-success col-xs-12">
               <span class="glyphicon glyphicon-plus"></span>
               <span class="hidden-xs">Add</span>
@@ -36,7 +36,7 @@
         <tr ng-repeat="track in tracklistService.tracks">
           <td>{{track.track_title}}</td>
           <td>{{track.artist}}</td>
-          <td>{{track.duration}}</td>
+          <td class="text-right">{{track.duration}}</td>
           <td>
             <button type="button" class="btn btn-danger" ng-click="jukebox.remove(track.track_id);">
               <span class="glyphicon glyphicon-trash"></span>

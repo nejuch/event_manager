@@ -17,6 +17,7 @@
     var db = $indexedDBProvider.connection('EventManagerDB');
     if ( typeof(db) === 'undefined' ) {
       alert("Unable to connect to Database.\nYou have to enable web storage in your browser options.");
+      return;
     }
 
     // ~~~ Create initial database version
@@ -34,16 +35,20 @@
   /**
    * Controller for the differet pages of the event manager
    */
-  app.controller("TabControl", function() {
+  app.controller("TabControl", ['currentEventProvider', function(currentEventProvider) {
     this.tab = 2;
 
     this.isSet = function(pTab) {
       return( this.tab === pTab );
     };
     this.setTab = function(pTab) {
+      if ( pTab === 3 && !Array.isArray(currentEventProvider.event.event_track) ) {
+        alert("There are no tracks listed for the current event.\nYou cannot start performing the current event.");
+        return;
+      }
       this.tab = pTab;
     };
-  });
+  }]);
 
   /**
    * Gemeinsam genutzter Dienst, der das aktuelle Event zur Verfügung stellt.
@@ -309,6 +314,13 @@
 
     /**
      * Hat das angegebene Event einen Ort?
+     */
+    this.getMapsLocation = function() {
+      return( encodeURIComponent(thisFactory.event.city + '+' + thisFactory.event.street + '+' + thisFactory.event.zip) );
+    }
+
+    /**
+     * Hat das angegebene Event einen Ort?
      * @param {number} pEventId Primärschlüssel
      */
     this.hasEquipment = function(pEventId) {
@@ -400,6 +412,48 @@
       controllerAs: 'planner'
     };
   }]);
+
+  /**
+   * Eigenes Tag für das aktuell ausgewählte Event
+   */
+  app.directive('eventPerformer', function() {
+    return {
+      restrict: 'E',
+      templateUrl: './html/event-performer.html',
+      /**
+       * Event-Planner Controller
+       * @author m11t
+       * @param {object} $indexedDB IndexedDB service
+       */
+      controller: function($scope, currentEventProvider) {
+        var thisController   = this;
+        thisController.track = 0;
+        $scope.provider      = currentEventProvider;
+
+
+        /**
+         * Ein Lied verschieben
+         * @param {number} pFrom Start-Index des Liedes
+         * @param {number} pTo   Ziel-Index des Liedes
+         */
+        thisController.start = function(pFrom, pTo) {
+          currentEventProvider.reorderTrack(pFrom, pTo);
+        };
+
+        /**
+         * Ein Lied verschieben
+         * @param {number} pFrom Start-Index des Liedes
+         * @param {number} pTo   Ziel-Index des Liedes
+         */
+        thisController.reorder = function(pFrom, pTo) {
+          currentEventProvider.reorderTrack(pFrom, pTo);
+        };
+
+
+      },
+      controllerAs: 'performer'
+    };
+  });
 
   /**
    * Eigenes Tag für die Ausrüstungsgegenstände des ausgewählten Events

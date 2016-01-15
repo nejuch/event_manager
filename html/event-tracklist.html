@@ -6,7 +6,7 @@
       <col class="col-xs-1">
       <col class="col-xs-5">
       <col class="col-xs-4">
-      <col class="col-xs-1 text-right">
+      <col class="col-xs-1">
       <col class="col-xs-1">
     </colgroup>
     <thead>
@@ -49,7 +49,7 @@
         <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
         <td>{{track.track_title}}</td>
         <td>{{track.artist}}</td>
-        <td>{{track.duration}}</td>
+        <td class="text-right">{{track.duration}}</td>
         <td>
           <button type="button" class="btn btn-danger" ng-click="tracklist.remove(track.track_id);">
             <span class="glyphicon glyphicon-trash"></span>
