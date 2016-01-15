@@ -45,6 +45,8 @@
       if ( pTab === 3 && !Array.isArray(currentEventProvider.event.event_track) ) {
         alert("There are no tracks listed for the current event.\nYou cannot start performing the current event.");
         return;
+      } else {
+        currentEventProvider.stopPlayer();
       }
       this.tab = pTab;
     };
@@ -53,8 +55,9 @@
   /**
    * Gemeinsam genutzter Dienst, der das aktuelle Event zur Verfügung stellt.
    */
-  app.service('currentEventProvider', ['$indexedDB', 'equipmentService', 'tracklistService', function($indexedDB, equipmentService, tracklistService) {
-    var thisFactory = this;
+  app.service('currentEventProvider', ['$indexedDB', 'equipmentService', 'tracklistService', '$interval', function($indexedDB, equipmentService, tracklistService, $interval) {
+    var thisFactory  = this,
+        thisInterval = null;
 
     thisFactory.eventIdx   = -1;
     thisFactory.eventId    = 0;
@@ -62,6 +65,8 @@
     thisFactory.events     = [];
     thisFactory.equipments = [];
     thisFactory.tracks     = [];
+    thisFactory.track      = 0;
+    thisFactory.progress   = 0;
 
     /**
      * Hilfsfunktion zum Laden aller Veranstaltungen
@@ -377,6 +382,60 @@
       }
     }
 
+    /**
+     * Eine Sekunde fortschreiten
+     */
+    function setProgress() {
+      var trackTime = (new Date("1970-01-01T00:"+thisFactory.tracks[thisFactory.track].duration+".000Z")).getTime();
+
+      // ~~~ Das Lied ist vorbei -> nächstes Lied starten
+      if ( thisFactory.progress === trackTime ) {
+        thisFactory.track++;
+        thisFactory.progress = 0;
+      }
+
+      // ~~~ Das Lied existiert nicht -> Stop
+      if ( thisFactory.track === thisFactory.tracks.length ) {
+        thisFactory.stopPlayer();
+        return;
+      }
+
+      thisFactory.progress += 1000;
+    }
+
+    /**
+     * Die Playlist stoppen
+     */
+    this.stopPlayer = function() {
+      thisFactory.track    = 0;
+      thisFactory.progress = 0;
+      $interval.cancel(thisInterval);
+      thisInterval = null;
+    };
+
+    /**
+     * Die Playlist starten
+     */
+    this.startPlayer = function() {
+      thisInterval = $interval(setProgress, 1000);
+    };
+
+    /**
+     * Zeitlichen Fortschritt de Players ermitteln
+     */
+    this.getProgressedTime = function() {
+      var timestamp = new Date(thisFactory.progress);
+      return( timestamp.getMinutes() + ":" + timestamp.getSeconds() );
+    };
+
+    /**
+     * Prozentualen Fortschritt des Players ermitteln
+     */
+    this.getProgressedPercentage = function() {
+      var trackTime = (new Date("1970-01-01T00:"+thisFactory.tracks[thisFactory.track].duration+".000Z")).getTime();
+      return( ((100 / trackTime) * thisFactory.progress) + "%" );
+    };
+
     // ~~~ Zum Start alle Events laden
     getAllEvents(false);
   }]);
@@ -425,19 +484,22 @@
        * @author m11t
        * @param {object} $indexedDB IndexedDB service
        */
-      controller: function($scope, currentEventProvider) {
-        var thisController   = this;
-        thisController.track = 0;
-        $scope.provider      = currentEventProvider;
-
+      controller: function($scope, $interval, currentEventProvider) {
+        var thisController = this;
+        $scope.provider    = currentEventProvider;
 
         /**
-         * Ein Lied verschieben
-         * @param {number} pFrom Start-Index des Liedes
-         * @param {number} pTo   Ziel-Index des Liedes
+         * Die Playlist stoppen
          */
-        thisController.start = function(pFrom, pTo) {
-          currentEventProvider.reorderTrack(pFrom, pTo);
+        thisController.stop = function() {
+          currentEventProvider.stopPlayer();
+        };
+
+        /**
+         * Die Playlist starten
+         */
+        thisController.start = function() {
+          currentEventProvider.startPlayer();
         };
 
         /**
