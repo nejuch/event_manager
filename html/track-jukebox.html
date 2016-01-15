@@ -1,19 +1,5 @@
 <div class="container">
   <h2>Jukebox</h2>
-  <div class="media" ng-repeat="track in tracklistService.tracks">
-    <div class="media-body">
-      <div class="row">
-        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
-        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
-      </div>
-      {{track.artist}}
-    </div>
-    <div class="media-right">
-      <button type="button" class="btn btn-lg btn-danger media-object" ng-click="jukebox.remove(track.track_id);">
-        <span class="glyphicon glyphicon-trash"></span>
-      </button>
-    </div>
-  </div>
 
   <form name="jukeboxAdd" class="media" ng-submit="jukebox.add()">
     <div class="media-body">
@@ -40,4 +26,20 @@
       </button>
     </div>
   </form>
+
+  <div class="media" ng-repeat="track in tracklistService.tracks">
+    <div class="media-body">
+      <div class="row">
+        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
+        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
+      </div>
+      {{track.artist}}
+    </div>
+    <div class="media-right">
+      <button type="button" class="btn btn-lg btn-danger media-object" ng-click="jukebox.remove(track.track_id);">
+        <span class="glyphicon glyphicon-trash"></span>
+      </button>
+    </div>
+  </div>
+
 </div>

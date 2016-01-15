@@ -1,17 +1,5 @@
 <div class="container">
   <h2>Inventory</h2>
-  <div class="row" ng-repeat="equipment in equipmentService.equipments" style="margin-bottom: 1em;">
-    <div class="col-xs-10">
-      <div class="input-group input-group-lg">
-        <span class="input-group-addon {{equipmentService.types[equipment.equipment_typ].css}}" title="{{equipmentService.types[equipment.equipment_typ].name}}"></span>
-        <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
-      </div>
-    </div>
-    <button type="button" class="btn btn-lg btn-danger col-xs-2" ng-click="inventory.remove(equipment.equipment_id);">
-      <span class="glyphicon glyphicon-trash"></span>
-      <span class="hidden-xs">Remove</span>
-    </button>
-  </div>
 
   <form name="equipmentInventoryAdd" class="row" ng-submit="inventory.add()">
     <div class="form-group col-xs-5">
@@ -35,4 +23,18 @@
       <span class="hidden-xs">Add</span>
     </button>
   </form>
+
+  <div class="row" ng-repeat="equipment in equipmentService.equipments">
+    <div class="col-xs-10">
+      <div class="input-group input-group-lg">
+        <span class="input-group-addon {{equipmentService.types[equipment.equipment_typ].css}}" title="{{equipmentService.types[equipment.equipment_typ].name}}"></span>
+        <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
+      </div>
+    </div>
+    <button type="button" class="btn btn-lg btn-danger col-xs-2" ng-click="inventory.remove(equipment.equipment_id);">
+      <span class="glyphicon glyphicon-trash"></span>
+      <span class="hidden-xs">Remove</span>
+    </button>
+  </div>
+
 </div>

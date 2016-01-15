@@ -92,24 +92,4 @@
     };
   });
 
-  /**
-   * Eigenes Tag für die Auswahl der vorhandenen Lieder
-   */
-  app.directive('trackOptions', function() {
-    return {
-      restrict: 'E',
-      templateUrl: './html/track-options.html',
-      /**
-       * Controller for the tracklist options
-       * @author m11t
-       * @param {object} $indexedDB IndexedDB service
-       */
-      controller: function($scope, tracklistService) {
-        var thisController      = this;
-        $scope.tracklistService = tracklistService;
-      },
-      controllerAs: 'trOptions'
-    };
-  });
-
 })();

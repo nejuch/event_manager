@@ -103,24 +103,4 @@
     };
   });
 
-  /**
-   * Eigenes Tag für die Auswahl an Instrumenten/Ausrüstungsgegenständen
-   */
-  app.directive('equipmentOptions', function() {
-    return {
-      restrict: 'E',
-      templateUrl: './html/equipment-options.html',
-      /**
-       * Controller for the equipment inventory
-       * @author m11t
-       * @param {object} $indexedDB IndexedDB service
-       */
-      controller: function($scope, equipmentService) {
-        var thisController      = this;
-        $scope.equipmentService = equipmentService;
-      },
-      controllerAs: 'eqOptions'
-    };
-  });
-
 })();

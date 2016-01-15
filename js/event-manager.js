@@ -405,9 +405,10 @@
 
         /**
          * Einen Ausrüstungsgegenstand hinzufügen
+         * @param {number} pId Primärschlüssel des Ausrüstungsgegenstands
          */
-        thisController.add = function() {
-          currentEventProvider.addEquipment( document.eventEquipmentAdd.eqId.selectedOptions[0].value );
+        thisController.add = function(pId) {
+          currentEventProvider.addEquipment(pId);
         };
 
         /**
@@ -441,9 +442,10 @@
 
         /**
          * Ein Lied hinzufügen
+         * @param {number} pId Primärschlüssel des Liedes
          */
-        thisController.add = function() {
-          currentEventProvider.addTrack( document.eventTrackAdd.trId.selectedOptions[0].value );
+        thisController.add = function(pId) {
+          currentEventProvider.addTrack(pId);
         };
 
         /**

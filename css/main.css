@@ -182,3 +182,7 @@ body > footer {
 .carousel-inner .event.current {
   left: 0;
 }
+
+.row {
+  margin-bottom: 1em;
+}

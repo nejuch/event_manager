@@ -1,6 +1,29 @@
 <div id="eventLuggage">
   <h2>Pack your equipment</h2>
-  <div class="row" ng-repeat="equipment in provider.equipments" style="margin-bottom: 1em;">
+
+  <div class="row">
+    <div class="dropdown col-xs-12">
+      <button class="btn btn-lg btn-success dropdown-toggle col-xs-12 text-left" type="button" id="eqId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Equipment
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu col-xs-12" aria-labelledby="eqId">
+        <li role="presentation">
+          <div class="input-group input-group-sm search-control">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            <input type="text" class="form-control" placeholder="Query" ng-model="query" />
+          </div>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li role="presentation" ng-repeat="equipment in equipmentService.equipments | filter:query">
+          <a href ng-click="luggage.add(equipment.equipment_id)" >{{equipment.equipment_name}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row" ng-repeat="equipment in provider.equipments">
     <div class="col-xs-10">
       <div class="input-group input-group-lg">
         <span class="input-group-addon {{provider.types[equipment.equipment_typ].css}}" title="{{provider.types[equipment.equipment_typ].name}}"></span>
@@ -13,19 +36,4 @@
     </button>
   </div>
 
-  <form name="eventEquipmentAdd" class="row" ng-submit="luggage.add()">
-    <div class="form-group col-xs-10">
-      <label class="sr-only" for="eqId">Equipment</label>
-      <select class="form-control input-lg" id="eqId" name="eqId" required>
-        <optgroup>
-          <option value="">Equipment</option>
-        </optgroup>
-        <equipment-options></equipment-options>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-lg btn-success col-xs-2">
-      <span class="glyphicon glyphicon-plus"></span>
-      <span class="hidden-xs">Add</span>
-    </button>
-  </form>
 </div>

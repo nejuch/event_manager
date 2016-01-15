@@ -1,5 +1,34 @@
 <div id="eventTracklist">
   <h2>Build your tracklist</h2>
+
+  <div class="row">
+    <div class="dropdown col-xs-12">
+      <button class="btn btn-lg btn-success dropdown-toggle col-xs-12 text-left" type="button" id="trId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="glyphicon glyphicon-plus"></span>
+        Add Track
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu col-xs-12" aria-labelledby="trId">
+        <li role="presentation">
+          <div class="input-group input-group-sm search-control">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+            <input type="text" class="form-control" placeholder="Query" ng-model="query" />
+          </div>
+        </li>
+        <li role="separator" class="divider"></li>
+        <li role="presentation" ng-repeat="track in tracklistService.tracks | filter:query">
+          <a href ng-click="tracklist.add(track.track_id)" >
+            <div class="row">
+              <div class="col-xs-5">{{track.track_title}}</div>
+              <div class="col-xs-5">{{track.artist}}</div>
+              <div class="col-xs-2 text-right">{{track.duration}}</div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <div class="media" ng-repeat="track in provider.tracks">
     <div class="media-body">
       <div class="row">
@@ -15,20 +44,4 @@
     </div>
   </div>
 
-  <form name="eventTrackAdd" class="row" ng-submit="tracklist.add()">
-    <div class="form-group col-xs-10">
-      <label class="sr-only" for="trId">Track</label>
-      <select class="form-control input-lg" id="trId" name="trId" required>
-        <optgroup>
-          <option value="">Track</option>
-        </optgroup>
-        <!--<track-options></track-options>-->
-        <option ng-repeat="track in tracklistService.tracks" value="{{track.track_id}}">{{track.track_title + " by " + track.artist + " [" + track.duration + "]"}}</option>
-      </select>
-    </div>
-    <button type="submit" class="btn btn-lg btn-success col-xs-2">
-      <span class="glyphicon glyphicon-plus"></span>
-      <span class="hidden-xs">Add</span>
-    </button>
-  </form>
 </div>
