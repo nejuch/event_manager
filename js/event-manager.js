@@ -486,8 +486,8 @@
         this.add = function() {
           var vEvent = {
             'event_name'       : document.eventCreator.eventName.value,
-            'date'             : new Date(document.eventDefiner.eventDate.value),
-            'time'             : document.eventDefiner.eventTime.value,
+            'date'             : new Date(document.eventCreator.eventDate.value),
+            'time'             : document.eventCreator.eventTime.value,
             'event_description': document.eventCreator.eventDescription.value,
             'street'           : document.eventCreator.locationStreet.value,
             'zip'              : document.eventCreator.locationZIP.value,

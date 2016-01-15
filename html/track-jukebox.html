@@ -2,44 +2,51 @@
   <h2>Jukebox</h2>
 
   <form name="jukeboxAdd" class="media" ng-submit="jukebox.add()">
-    <div class="media-body">
-      <div class="row">
-        <div class="form-group col-xs-8">
-          <label class="sr-only" for="trackTitle">Title</label>
-          <input type="text" class="form-control input-lg" id="trackTitle" name="trackTitle" placeholder="Title" required />
-        </div>
-        <div class="form-group col-xs-4">
-          <label class="sr-only" for="trackTime">Duration</label>
-          <input type="time" class="form-control input-lg" id="trackTime" name="trackTime" placeholder="Duration" required />
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-xs-12">
-          <label class="sr-only" for="trackArtist">Artist</label>
-          <input type="text" class="form-control input-lg" id="trackArtist" name="trackArtist" placeholder="Artist" required />
-        </div>
-      </div>
-    </div>
-    <div class="media-right">
-      <button type="submit" class="btn btn-lg btn-success media-object">
-        <span class="glyphicon glyphicon-plus"></span>
-      </button>
-    </div>
-  </form>
 
-  <div class="media" ng-repeat="track in tracklistService.tracks">
-    <div class="media-body">
-      <div class="row">
-        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
-        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
-      </div>
-      {{track.artist}}
-    </div>
-    <div class="media-right">
-      <button type="button" class="btn btn-lg btn-danger media-object" ng-click="jukebox.remove(track.track_id);">
-        <span class="glyphicon glyphicon-trash"></span>
-      </button>
-    </div>
-  </div>
+    <table class="table table-striped">
+      <colgroup>
+        <col class="col-xs-5">
+        <col class="col-xs-5">
+        <col class="col-xs-1 text-right">
+        <col class="col-xs-1">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>
+            <label class="sr-only" for="trackTitle">Title</label>
+            <input type="text" class="form-control" id="trackTitle" name="trackTitle" placeholder="Title" required />
+          </th>
+          <th>
+            <label class="sr-only" for="trackArtist">Artist</label>
+            <input type="text" class="form-control" id="trackArtist" name="trackArtist" placeholder="Artist" required />
+          </th>
+          <th>
+            <label class="sr-only" for="trackTime">Time</label>
+            <input type="time" class="form-control" id="trackTime" name="trackTime" placeholder="Time" required />
+          </th>
+          <th class="text-right">
+            <button type="submit" class="btn btn-success col-xs-12">
+              <span class="glyphicon glyphicon-plus"></span>
+              <span class="hidden-xs">Add</span>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="track in tracklistService.tracks">
+          <td>{{track.track_title}}</td>
+          <td>{{track.artist}}</td>
+          <td>{{track.duration}}</td>
+          <td>
+            <button type="button" class="btn btn-danger" ng-click="jukebox.remove(track.track_id);">
+              <span class="glyphicon glyphicon-trash"></span>
+              <span class="hidden-xs">Remove</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </form>
 
 </div>

@@ -2,12 +2,18 @@
   <h2>Build your tracklist</h2>
 
   <table class="table table-striped">
+    <colgroup>
+      <col class="col-xs-5">
+      <col class="col-xs-5">
+      <col class="col-xs-1 text-right">
+      <col class="col-xs-1">
+    </colgroup>
     <thead>
       <tr>
         <th>Title</th>
         <th>Artist</th>
-        <th>Time</th>
-        <th class="text-right">
+        <th class="text-right">Time</th>
+        <th>
           <div class="dropdown">
             <button class="btn btn-success dropdown-toggle col-xs-12 text-left" type="button" id="trId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
               <span class="glyphicon glyphicon-plus"></span>
@@ -38,16 +44,10 @@
     </thead>
     <tbody>
       <tr ng-repeat="track in provider.tracks">
-        <td class="col-xs-5">
-          {{track.track_title}}
-        </td>
-        <td class="col-xs-5">
-          {{track.artist}}
-        </td>
-        <td class="col-xs-1 text-right">
-          {{track.duration}}
-        </td>
-        <td class="col-xs-1">
+        <td>{{track.track_title}}</td>
+        <td>{{track.artist}}</td>
+        <td>{{track.duration}}</td>
+        <td>
           <button type="button" class="btn btn-danger" ng-click="tracklist.remove(track.track_id);">
             <span class="glyphicon glyphicon-trash"></span>
             <span class="hidden-xs">Remove</span>

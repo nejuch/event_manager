@@ -2,6 +2,11 @@
   <h2>Pack your equipment</h2>
 
   <table class="table table-striped">
+    <colgroup>
+      <col class="col-xs-2">
+      <col class="col-xs-9">
+      <col class="col-xs-1">
+    </colgroup>
     <thead>
       <tr>
         <th>Type</th>
@@ -31,13 +36,14 @@
     </thead>
     <tbody>
       <tr ng-repeat="equipment in provider.equipments">
-        <td class="col-xs-2">
-          <span class="{{provider.types[equipment.equipment_typ].css}}"></span>{{provider.types[equipment.equipment_typ].name}}
+        <td>
+          <span class="{{provider.types[equipment.equipment_typ].css}}"></span>
+          {{provider.types[equipment.equipment_typ].name}}
         </td>
-        <td class="col-xs-9">
+        <td>
           {{equipment.equipment_name}}
         </td>
-        <td class="col-xs-1">
+        <td>
           <button type="button" class="btn btn-danger" ng-click="luggage.remove(equipment.equipment_id);">
             <span class="glyphicon glyphicon-trash"></span>
             <span class="hidden-xs">Remove</span>

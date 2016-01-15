@@ -4,6 +4,11 @@
   <form name="equipmentInventoryAdd" class="row" ng-submit="inventory.add()">
 
     <table class="table table-striped">
+      <colgroup>
+        <col class="col-xs-2">
+        <col class="col-xs-9">
+        <col class="col-xs-1">
+      </colgroup>
       <thead>
         <tr>
           <th>
@@ -32,14 +37,14 @@
       </thead>
       <tbody>
         <tr ng-repeat="equipment in equipmentService.equipments">
-          <td class="col-xs-2">
+          <td>
             <span class="{{equipmentService.types[equipment.equipment_typ].css}}"></span>
             {{equipmentService.types[equipment.equipment_typ].name}}
           </td>
-          <td class="col-xs-9">
+          <td>
             {{equipment.equipment_name}}
           </td>
-          <td class="col-xs-1">
+          <td>
             <button type="button" class="btn btn-danger" ng-click="inventory.remove(equipment.equipment_id);">
               <span class="glyphicon glyphicon-trash"></span>
               <span class="hidden-xs">Remove</span>
