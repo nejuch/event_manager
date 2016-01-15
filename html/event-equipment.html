@@ -37,8 +37,8 @@
     <tbody>
       <tr ng-repeat="equipment in provider.equipments">
         <td>
-          <span class="{{provider.types[equipment.equipment_typ].css}}"></span>
-          {{provider.types[equipment.equipment_typ].name}}
+          <span class="{{equipmentService.types[equipment.equipment_typ].css}}"></span>
+          {{equipmentService.types[equipment.equipment_typ].name}}
         </td>
         <td>
           {{equipment.equipment_name}}

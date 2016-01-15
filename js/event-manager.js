@@ -402,9 +402,10 @@
        * @author m11t
        * @param {object} $indexedDB IndexedDB service
        */
-      controller: function($scope, currentEventProvider) {
-        var thisController = this;
-        $scope.provider    = currentEventProvider;
+      controller: function($scope, currentEventProvider, equipmentService) {
+        var thisController      = this;
+        $scope.provider         = currentEventProvider;
+        $scope.equipmentService = equipmentService;
 
         /**
          * Einen Ausrüstungsgegenstand hinzufügen
