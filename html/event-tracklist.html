@@ -22,7 +22,8 @@
         <optgroup>
           <option value="">Track</option>
         </optgroup>
-        <track-options></track-options>
+        <!--<track-options></track-options>-->
+        <option ng-repeat="track in tracklistService.tracks" value="{{track.track_id}}">{{track.track_title + " by " + track.artist + " [" + track.duration + "]"}}</option>
       </select>
     </div>
     <button type="submit" class="btn btn-lg btn-success col-xs-2">

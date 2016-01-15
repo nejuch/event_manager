@@ -23,7 +23,7 @@
 
         <h1 class="clearfix">
           <button type="button" class="close pull-left" aria-label="Close" ng-click="carousel.remove(event.event_id)"><span aria-hidden="true">&times; Remove</span></button>
-          <small class="pull-right">{{event.timestamp.toLocaleString()}}</small>
+          <small class="pull-right">{{event.date.toLocaleDateString() + " " + event.time}}</small>
         </h1>
         <h1>
           {{event.event_name}}

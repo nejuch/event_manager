@@ -434,9 +434,10 @@
        * @author m11t
        * @param {object} $indexedDB IndexedDB service
        */
-      controller: function($scope, currentEventProvider) {
+      controller: function($scope, currentEventProvider, tracklistService) {
         var thisController = this;
         $scope.provider    = currentEventProvider;
+        $scope.tracklistService = tracklistService;
 
         /**
          * Ein Lied hinzufügen
@@ -480,7 +481,8 @@
         this.add = function() {
           var vEvent = {
             'event_name'       : document.eventCreator.eventName.value,
-            'timestamp'        : new Date(document.eventCreator.eventDate.value + "T" + document.eventCreator.eventHour.value + ":" + document.eventCreator.eventMinute.value + ":00"),
+            'date'             : new Date(document.eventDefiner.eventDate.value),
+            'time'             : document.eventDefiner.eventTime.value,
             'event_description': document.eventCreator.eventDescription.value,
             'street'           : document.eventCreator.locationStreet.value,
             'zip'              : document.eventCreator.locationZIP.value,
@@ -526,7 +528,8 @@
           var vEvent = {
             'event_id'         : currentEventProvider.eventId,
             'event_name'       : document.eventDefiner.eventName.value,
-            'timestamp'        : new Date(document.eventDefiner.eventDate.value + "T" + document.eventDefiner.eventHour.value + ":" + document.eventDefiner.eventMinute.value + ":00"),
+            'date'             : new Date(document.eventDefiner.eventDate.value),
+            'time'             : document.eventDefiner.eventTime.value,
             'event_description': document.eventDefiner.eventDescription.value,
             'street'           : document.eventDefiner.locationStreet.value,
             'zip'              : document.eventDefiner.locationZIP.value,
