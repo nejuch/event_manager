@@ -2,39 +2,53 @@
   <h2>Inventory</h2>
 
   <form name="equipmentInventoryAdd" class="row" ng-submit="inventory.add()">
-    <div class="form-group col-xs-5">
-      <label class="sr-only" for="eqType">Type</label>
-      <div class="input-group input-group-lg">
-        <div class="input-group-addon"><span id="eqAddTypeCurrent" class="glyphicon glyphicon-option-horizontal"></span></div>
-        <select class="form-control" id="eqType" name="eqType" onchange="document.getElementById('eqAddTypeCurrent').className = this.selectedOptions[0].attributes['data-style'].value;" required>
-          <optgroup>
-            <option value="" data-style="glyphicon glyphicon-option-horizontal">Type</option>
-          </optgroup>
-          <option ng-repeat="type in equipmentService.types" data-style="{{type.css}}">{{type.name}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group col-xs-5">
-      <label class="sr-only" for="eqName">Name</label>
-      <input type="text" class="form-control input-lg" id="eqName" name="eqName" placeholder="Name" required />
-    </div>
-    <button type="submit" class="btn btn-lg btn-success col-xs-2">
-      <span class="glyphicon glyphicon-plus"></span>
-      <span class="hidden-xs">Add</span>
-    </button>
-  </form>
 
-  <div class="row" ng-repeat="equipment in equipmentService.equipments">
-    <div class="col-xs-10">
-      <div class="input-group input-group-lg">
-        <span class="input-group-addon {{equipmentService.types[equipment.equipment_typ].css}}" title="{{equipmentService.types[equipment.equipment_typ].name}}"></span>
-        <input type="text" class="form-control" value="{{equipment.equipment_name}}" readonly />
-      </div>
-    </div>
-    <button type="button" class="btn btn-lg btn-danger col-xs-2" ng-click="inventory.remove(equipment.equipment_id);">
-      <span class="glyphicon glyphicon-trash"></span>
-      <span class="hidden-xs">Remove</span>
-    </button>
-  </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>
+            <label class="sr-only" for="eqType">Type</label>
+            <div class="input-group">
+              <div class="input-group-addon"><span id="eqAddTypeCurrent" class="glyphicon glyphicon-option-horizontal"></span></div>
+              <select class="form-control" id="eqType" name="eqType" onchange="document.getElementById('eqAddTypeCurrent').className = this.selectedOptions[0].attributes['data-style'].value;" required>
+                <optgroup>
+                  <option value="" data-style="glyphicon glyphicon-option-horizontal">Type</option>
+                </optgroup>
+                <option ng-repeat="type in equipmentService.types" data-style="{{type.css}}">{{type.name}}</option>
+              </select>
+            </div>
+          </th>
+          <th>
+            <label class="sr-only" for="eqName">Name</label>
+            <input type="text" class="form-control" id="eqName" name="eqName" placeholder="Name" required />
+          </th>
+          <th>
+            <button type="submit" class="btn btn-success col-xs-12">
+              <span class="glyphicon glyphicon-plus"></span>
+              <span class="hidden-xs">Add</span>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="equipment in equipmentService.equipments">
+          <td class="col-xs-2">
+            <span class="{{equipmentService.types[equipment.equipment_typ].css}}"></span>
+            {{equipmentService.types[equipment.equipment_typ].name}}
+          </td>
+          <td class="col-xs-9">
+            {{equipment.equipment_name}}
+          </td>
+          <td class="col-xs-1">
+            <button type="button" class="btn btn-danger" ng-click="inventory.remove(equipment.equipment_id);">
+              <span class="glyphicon glyphicon-trash"></span>
+              <span class="hidden-xs">Remove</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </form>
 
 </div>

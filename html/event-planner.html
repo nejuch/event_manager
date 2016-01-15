@@ -1,10 +1,10 @@
 <div>
   <event-carousel></event-carousel>
 
-  <div class="container" ng-show="planner.provider.isCreator()">
+  <div ng-show="planner.provider.isCreator()">
     <event-creator></event-creator>
   </div>
-  <div class="container" ng-hide="planner.provider.isCreator()">
+  <div ng-hide="planner.provider.isCreator()">
     <event-definer></event-definer>
     <event-equipment></event-equipment>
     <event-tracklist></event-tracklist>

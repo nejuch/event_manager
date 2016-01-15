@@ -153,6 +153,11 @@ body > footer {
   height: 80px;
 }
 
+.container {
+  padding-top: 5em;
+  padding-bottom: 5em;
+}
+
 .jumbotron .panel {
   width: 50%;
   margin: 0 auto;

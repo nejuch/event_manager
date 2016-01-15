@@ -15,6 +15,9 @@
    */
   app.config(function($indexedDBProvider) {
     var db = $indexedDBProvider.connection('EventManagerDB');
+    if ( typeof(db) === 'undefined' ) {
+      alert("Unable to connect to Database.\nYou have to enable web storage in your browser options.");
+    }
 
     // ~~~ Create initial database version
     db.upgradeDatabase(1, function(pEvent, pDatabase, pTransaction) {

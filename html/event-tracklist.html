@@ -1,47 +1,60 @@
-<div id="eventTracklist">
+<div class="container" id="eventTracklist">
   <h2>Build your tracklist</h2>
 
-  <div class="row">
-    <div class="dropdown col-xs-12">
-      <button class="btn btn-lg btn-success dropdown-toggle col-xs-12 text-left" type="button" id="trId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-        <span class="glyphicon glyphicon-plus"></span>
-        Add Track
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu col-xs-12" aria-labelledby="trId">
-        <li role="presentation">
-          <div class="input-group input-group-sm search-control">
-            <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-            <input type="text" class="form-control" placeholder="Query" ng-model="query" />
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Artist</th>
+        <th>Time</th>
+        <th class="text-right">
+          <div class="dropdown">
+            <button class="btn btn-success dropdown-toggle col-xs-12 text-left" type="button" id="trId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <span class="glyphicon glyphicon-plus"></span>
+              Add
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu col-xs-12" aria-labelledby="trId">
+              <li role="presentation">
+                <div class="input-group input-group-sm search-control">
+                  <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                  <input type="text" class="form-control" placeholder="Query" ng-model="query" />
+                </div>
+              </li>
+              <li role="separator" class="divider"></li>
+              <li role="presentation" ng-repeat="track in tracklistService.tracks | filter:query">
+                <a href ng-click="tracklist.add(track.track_id)" >
+                  <div>
+                    <div>{{track.track_title}}</div>
+                    <div>{{track.artist}}</div>
+                    <div>{{track.duration}}</div>
+                  </div>
+                </a>
+              </li>
+            </ul>
           </div>
-        </li>
-        <li role="separator" class="divider"></li>
-        <li role="presentation" ng-repeat="track in tracklistService.tracks | filter:query">
-          <a href ng-click="tracklist.add(track.track_id)" >
-            <div class="row">
-              <div class="col-xs-5">{{track.track_title}}</div>
-              <div class="col-xs-5">{{track.artist}}</div>
-              <div class="col-xs-2 text-right">{{track.duration}}</div>
-            </div>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="media" ng-repeat="track in provider.tracks">
-    <div class="media-body">
-      <div class="row">
-        <h4 class="media-header col-xs-10">{{track.track_title}}</h4>
-        <h4 class="media-header col-xs-2 text-right">{{track.duration}}</h4>
-      </div>
-      {{track.artist}}
-    </div>
-    <div class="media-right">
-      <button type="button" class="btn btn-lg btn-danger media-object" ng-click="tracklist.remove(track.track_id);">
-        <span class="glyphicon glyphicon-trash"></span>
-      </button>
-    </div>
-  </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="track in provider.tracks">
+        <td class="col-xs-5">
+          {{track.track_title}}
+        </td>
+        <td class="col-xs-5">
+          {{track.artist}}
+        </td>
+        <td class="col-xs-1 text-right">
+          {{track.duration}}
+        </td>
+        <td class="col-xs-1">
+          <button type="button" class="btn btn-danger" ng-click="tracklist.remove(track.track_id);">
+            <span class="glyphicon glyphicon-trash"></span>
+            <span class="hidden-xs">Remove</span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
 </div>
